@@ -6,6 +6,10 @@ import User from "./User.js";
 const Order = sequelize.define(
     "Order",
     {
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         quantity: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -29,9 +33,7 @@ const Order = sequelize.define(
     { timestamps: false }
 );
 
-Order.belongsTo(Product, { foreignKey: "product_id" });
 Order.belongsTo(User, { foreignKey: "user_id" });
-Product.hasMany(Order, { foreignKey: "product_id" });
 User.hasMany(Order, { foreignKey: "user_id" });
 
 export default Order;

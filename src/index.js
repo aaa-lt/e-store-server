@@ -5,6 +5,7 @@ import Category from "./models/Category.js";
 import Supplier from "./models/Supplier.js";
 import Product from "./models/Product.js";
 import Order from "./models/Order.js";
+import OrderProduct from "./models/OrderProduct.js";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 
@@ -23,60 +24,10 @@ const syncDatabase = async () => {
     }
 };
 
-const getUsers = async () => {
-    try {
-        const users = await User.findAll();
-        console.log("users:", JSON.stringify(users, null, 2));
-    } catch (err) {
-        console.log("Error while getting users:", err);
-    }
-};
-
 syncDatabase();
-
-// const jane = await User.create({
-//     username: "Jane",
-//     password: "Doe",
-//     email: "DDD",
-// });
-
-// console.log("Jane's auto-generated ID:", jane.id);
-
-getUsers();
 
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
-
-// app.get("/products", function (req, res) {
-//     return res.send("Hellow");
-// });
-
-// app.get("/products/:id", function (req, res) {
-//     const id = req.params.id;
-
-//     // const index = findProductIndexById(id);
-
-//     if (index > -1) {
-//         // return res.send(products[index]);
-//     } else {
-//         res.status(404).send("Product not found");
-//     }
-// });
-
-// app.post("/products/", (req, res) => {
-//     console.log(req.body);
-//     if (!req.body.name) return res.sendStatus(400);
-
-//     const productName = req.body.name;
-//     const product = {
-//         name: productName,
-//     };
-
-//     product.id = id++;
-
-//     // products.push(product);
-//     res.sendStatus(200);
-// });
 
 app.listen(3000, () => {
     console.log("Listening on 3000");

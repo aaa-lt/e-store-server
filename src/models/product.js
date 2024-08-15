@@ -11,14 +11,30 @@ const Product = sequelize.define(
             allowNull: false,
         },
         description: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
+        },
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         },
         price: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        category_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        supplier_id: {
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+        updatedAt: false,
+        createdAt: "creation_date",
+    }
 );
 
 Product.belongsTo(Category, { foreignKey: "category_id" });
