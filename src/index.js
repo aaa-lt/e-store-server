@@ -1,9 +1,12 @@
 import express from "express";
 import sequelize from "../config/db.js";
-import User from "./models/user.js";
-import Category from "./models/category.js";
-import Supplier from "./models/supplier.js";
-import Product from "./models/product.js";
+import User from "./models/User.js";
+import Category from "./models/Category.js";
+import Supplier from "./models/Supplier.js";
+import Product from "./models/Product.js";
+import Order from "./models/Order.js";
+import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/user.js";
 
 const app = express();
 
@@ -13,7 +16,7 @@ const syncDatabase = async () => {
     try {
         await sequelize.authenticate();
         console.log("Connection has been established successfully.");
-        await sequelize.sync({ force: true });
+        await sequelize.sync({ force: false });
         console.log("Database synchronized.");
     } catch (error) {
         console.error("Unable to connect to the database:", error);
@@ -31,38 +34,49 @@ const getUsers = async () => {
 
 syncDatabase();
 
+// const jane = await User.create({
+//     username: "Jane",
+//     password: "Doe",
+//     email: "DDD",
+// });
+
+// console.log("Jane's auto-generated ID:", jane.id);
+
 getUsers();
 
-app.get("/products", function (req, res) {
-    // return res.send(products);
-});
+app.use("/users", userRoutes);
+app.use("/auth", authRoutes);
 
-app.get("/products/:id", function (req, res) {
-    const id = req.params.id;
+// app.get("/products", function (req, res) {
+//     return res.send("Hellow");
+// });
 
-    // const index = findProductIndexById(id);
+// app.get("/products/:id", function (req, res) {
+//     const id = req.params.id;
 
-    if (index > -1) {
-        // return res.send(products[index]);
-    } else {
-        res.status(404).send("Product not found");
-    }
-});
+//     // const index = findProductIndexById(id);
 
-app.post("/products/", (req, res) => {
-    console.log(req.body);
-    if (!req.body.name) return res.sendStatus(400);
+//     if (index > -1) {
+//         // return res.send(products[index]);
+//     } else {
+//         res.status(404).send("Product not found");
+//     }
+// });
 
-    const productName = req.body.name;
-    const product = {
-        name: productName,
-    };
+// app.post("/products/", (req, res) => {
+//     console.log(req.body);
+//     if (!req.body.name) return res.sendStatus(400);
 
-    product.id = id++;
+//     const productName = req.body.name;
+//     const product = {
+//         name: productName,
+//     };
 
-    // products.push(product);
-    res.sendStatus(200);
-});
+//     product.id = id++;
+
+//     // products.push(product);
+//     res.sendStatus(200);
+// });
 
 app.listen(3000, () => {
     console.log("Listening on 3000");
