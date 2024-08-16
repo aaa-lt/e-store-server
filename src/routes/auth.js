@@ -41,7 +41,9 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ where: { username: username } });
+        const user = await User.scope("withPassword").findOne({
+            where: { username: username },
+        });
         if (user === null) {
             return res.status(401).json({ error: "Authentication failed" });
         }
@@ -121,7 +123,7 @@ router.post("/refresh", async (req, res) => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.SECRETKEY);
         const accessToken = jwt.sign(
-            { user: decoded.userId },
+            { userId: decoded.userId },
             process.env.SECRETKEY,
             {
                 expiresIn: "1h",
@@ -131,6 +133,7 @@ router.post("/refresh", async (req, res) => {
             .header("Authorization", accessToken)
             .json({ status: "success", message: decoded.userId });
     } catch (error) {
+        console.log(error);
         return res
             .status(400)
             .json({ status: "failed", error: "Invalid refresh token" });
