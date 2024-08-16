@@ -1,12 +1,10 @@
-import express from "express";
+import { Router } from "express";
 import verifyToken from "../middleware/authMiddleware.js";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/", verifyToken, (req, res) => {
+router.get("/me", verifyToken, (req, res) => {
     res.status(200).json({ message: "Protected route accessed" });
 });
-
-// TODO Refresh token to be implemented
 
 export default router;

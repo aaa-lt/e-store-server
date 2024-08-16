@@ -24,4 +24,4 @@ logs
 
 # Environment variables
 .env*
-
+*.env
