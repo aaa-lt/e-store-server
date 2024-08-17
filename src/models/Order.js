@@ -10,15 +10,6 @@ const Order = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        quantity: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        order_date: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
         status: {
             type: DataTypes.ENUM(
                 "Pending",
@@ -30,7 +21,11 @@ const Order = sequelize.define(
             defaultValue: "Pending",
         },
     },
-    { timestamps: false }
+    {
+        timestamps: true,
+        updatedAt: false,
+        createdAt: "order_date",
+    }
 );
 
 Order.belongsTo(User, { foreignKey: "user_id" });

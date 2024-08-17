@@ -7,10 +7,10 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     try {
-        const categories = await Supplier.findAll();
-        res.status(200).send(categories);
+        const suppliers = await Supplier.findAll();
+        return res.status(200).send(suppliers);
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             status: "failed",
             error: "Failed to get information",
         });
@@ -19,27 +19,49 @@ router.get("/", async (req, res) => {
 
 router.post("/", verifyToken, isAdmin, async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, contact_email, phone_number } = req.body;
         const existingName = await Supplier.findOne({
             where: { name: name },
         });
+
         if (existingName)
             return res.status(409).json({
                 status: "failed",
                 error: "Supplier with this name is already exists",
             });
+        const existingEmail = await Supplier.findOne({
+            where: { contact_email: contact_email },
+        });
+
+        if (existingEmail)
+            return res.status(409).json({
+                status: "failed",
+                error: "Supplier with this email is already exists",
+            });
+
+        const existingNumber = await Supplier.findOne({
+            where: { phone_number: phone_number },
+        });
+        if (existingNumber)
+            return res.status(409).json({
+                status: "failed",
+                error: "Supplier with this phone is already exists",
+            });
+
         await Supplier.create({
             name: name,
-            description: description,
+            contact_email: contact_email,
+            phone_number: phone_number,
         });
-        res.status(201).json({
+        return res.status(201).json({
             status: "success",
             message: "Supplier created successfully",
         });
     } catch (error) {
-        res.status(500).json({
+        console.log(error);
+        return res.status(500).json({
             status: "failed",
-            error: "Registration failed",
+            error: "Creation failed",
         });
     }
 });

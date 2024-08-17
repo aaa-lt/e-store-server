@@ -8,9 +8,6 @@ const Supplier = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        password_hash: {
-            type: DataTypes.STRING,
-        },
         contact_email: {
             type: DataTypes.STRING,
             allowNull: false,

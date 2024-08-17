@@ -16,10 +16,12 @@ const Product = sequelize.define(
         quantity: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue: 0,
         },
         price: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue: 0,
         },
         category_id: {
             type: DataTypes.INTEGER,

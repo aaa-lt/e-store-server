@@ -9,19 +9,17 @@ erDiagram
         Boolean is_admin
     }
 
-    ORDER }o--o| ORDER_PRODUCT : has
-    ORDER }o--|{ PRODUCT : contains
+    ORDER ||--|{ ORDER_PRODUCT : has
     ORDER {
         Integer id
         Integer user_id
-        Integer quantity
         DateTime order_date
         String status
     }
 
     PRODUCT }o--|| CATEGORY : belongs_to
     PRODUCT }o--|| SUPPLIER : supplied_by
-    PRODUCT }o--o| ORDER_PRODUCT : part_of
+    PRODUCT ||--o{ ORDER_PRODUCT : part_of
     PRODUCT {
         Integer id
         String name
@@ -49,6 +47,7 @@ erDiagram
     ORDER_PRODUCT {
         Integer order_id
         Integer product_id
+        Integer quantity
     }
 
 ```

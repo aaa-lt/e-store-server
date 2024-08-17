@@ -5,7 +5,13 @@ import Product from "./Product.js";
 
 const OrderProduct = sequelize.define(
     "OrderProduct",
-    {},
+    {
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+        },
+    },
     { timestamps: false }
 );
 

@@ -8,9 +8,9 @@ const router = Router();
 router.get("/", async (req, res) => {
     try {
         const categories = await Category.findAll();
-        res.status(200).send(categories);
+        return res.status(200).send(categories);
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             status: "failed",
             error: "Failed to get information",
         });
@@ -32,14 +32,14 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
             name: name,
             description: description,
         });
-        res.status(201).json({
+        return res.status(201).json({
             status: "success",
             message: "Category created successfully",
         });
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             status: "failed",
-            error: "Registration failed",
+            error: "Creation failed",
         });
     }
 });

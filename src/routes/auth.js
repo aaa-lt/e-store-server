@@ -2,7 +2,7 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import "dotenv/config";
-import { User, BlacklistedToken } from "../models/indexModels.js";
+import { User } from "../models/indexModels.js";
 
 const router = Router();
 
@@ -90,17 +90,7 @@ router.post("/logout", async (req, res) => {
     }
 
     try {
-        const decodedAccess = jwt.verify(accessToken, process.env.SECRETKEY);
-        const decodedRefresh = jwt.verify(refreshToken, process.env.SECRETKEY);
-
-        await BlacklistedToken.create({
-            token: accessToken,
-            expiresAt: new Date(decodedAccess.exp * 1000),
-        });
-        await BlacklistedToken.create({
-            token: accessToken,
-            expiresAt: new Date(decodedRefresh.exp * 1000),
-        });
+        // TODO remove tokens from client
 
         res.status(204)
             .header("Authorization", accessToken)
