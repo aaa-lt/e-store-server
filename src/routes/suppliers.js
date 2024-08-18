@@ -5,6 +5,20 @@ import Supplier from "../models/Supplier.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * '/suppliers':
+ *  get:
+ *     tags:
+ *     - Supplier Controller
+ *     summary: Get product suppliers
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      500:
+ *        description: Server Error
+ */
+
 router.get("/", async (req, res) => {
     try {
         const suppliers = await Supplier.findAll();
@@ -16,6 +30,36 @@ router.get("/", async (req, res) => {
         });
     }
 });
+
+/**
+ * @openapi
+ * '/suppliers':
+ *  post:
+ *     tags:
+ *     - Supplier Controller
+ *     summary: Create a supplier
+ *     security:
+ *       - Authorization: []
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - user
+ *            properties:
+ *              name:
+ *                type: string
+ *                default: any
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      500:
+ *        description: Server Error
+ */
 
 router.post("/", verifyToken, isAdmin, async (req, res) => {
     try {

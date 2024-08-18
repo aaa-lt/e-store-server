@@ -5,6 +5,22 @@ import User from "../models/User.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * '/users/me':
+ *  get:
+ *     tags:
+ *     - User Controller
+ *     summary: Get user profile
+ *     security:
+ *       - Authorization: []
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      500:
+ *        description: Server Error
+ */
+
 router.get("/me", verifyToken, async (req, res) => {
     try {
         const profile = await User.findByPk(req.userId);
@@ -16,6 +32,29 @@ router.get("/me", verifyToken, async (req, res) => {
         });
     }
 });
+
+/**
+ * @openapi
+ * '/users/{id}':
+ *  get:
+ *     tags:
+ *     - User Controller
+ *     summary: Get user profile
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the user to get
+ *     security:
+ *       - Authorization: []
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      500:
+ *        description: Server Error
+ */
 
 router.get("/:id", verifyToken, isAdmin, async (req, res) => {
     try {

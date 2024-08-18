@@ -5,6 +5,20 @@ import Category from "../models/Category.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * '/categories':
+ *  get:
+ *     tags:
+ *     - Category Controller
+ *     summary: Get product categories
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      500:
+ *        description: Server Error
+ */
+
 router.get("/", async (req, res) => {
     try {
         const categories = await Category.findAll();
@@ -16,6 +30,36 @@ router.get("/", async (req, res) => {
         });
     }
 });
+
+/**
+ * @openapi
+ * '/categories':
+ *  post:
+ *     tags:
+ *     - Category Controller
+ *     summary: Create a category
+ *     security:
+ *       - Authorization: []
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - user
+ *            properties:
+ *              name:
+ *                type: string
+ *                default: any
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      500:
+ *        description: Server Error
+ */
 
 router.post("/", verifyToken, isAdmin, async (req, res) => {
     try {

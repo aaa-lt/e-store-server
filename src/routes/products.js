@@ -5,6 +5,20 @@ import Product from "../models/Product.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * '/products':
+ *  get:
+ *     tags:
+ *     - Product Controller
+ *     summary: Get products
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      500:
+ *        description: Server Error
+ */
+
 router.get("/", async (req, res) => {
     try {
         const filter = req.query.filter;
@@ -24,6 +38,29 @@ router.get("/", async (req, res) => {
     }
 });
 
+/**
+ * @openapi
+ * '/products/{id}':
+ *   get:
+ *     tags:
+ *       - Product Controller
+ *     summary: Get details of a specific product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the product to get
+ *     responses:
+ *       200:
+ *         description: Fetched Successfully
+ *       404:
+ *         description: Not found
+ *       500:
+ *         description: Server Error
+ */
+
 router.get("/:id", async (req, res) => {
     try {
         const product = await Product.findOne({ where: { id: req.params.id } });
@@ -38,6 +75,50 @@ router.get("/:id", async (req, res) => {
         });
     }
 });
+
+/**
+ * @openapi
+ * '/products':
+ *  post:
+ *     tags:
+ *     - Product Controller
+ *     summary: Create a product
+ *     security:
+ *     - Authorization: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *               price:
+ *                 type: number
+ *                 format: float
+ *               category_id:
+ *                 type: integer
+ *               supplier_id:
+ *                 type: integer
+ *             required:
+ *               - name
+ *               - quantity
+ *               - price
+ *               - category_id
+ *               - supplier_id
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      500:
+ *        description: Server Error
+ */
 
 router.post("/", verifyToken, isAdmin, async (req, res) => {
     try {
@@ -59,6 +140,77 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
         return res.status(500).json({
             status: "failed",
             error: "Creation failed",
+        });
+    }
+});
+
+/**
+ * @openapi
+ * '/products/{id}':
+ *  put:
+ *     tags:
+ *     - Order Controller
+ *     summary: Update the product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the product to update
+ *     security:
+ *       - Authorization: []
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - products
+ *            properties:
+ *              status:
+ *                type: string
+ *                enum: [Pending, Shipped, Delivered, Cancelled]
+ *     responses:
+ *      201:
+ *        description: Updated
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Server Error
+ */
+
+router.put("/:id", verifyToken, isAdmin, async (req, res) => {
+    try {
+        const { name, description, quantity, price, category_id, supplier_id } =
+            req.body;
+        const product = await Order.findByPk(req.params.id);
+        if (product) {
+            await product.update({
+                name: name,
+                description: description,
+                quantity: quantity,
+                price: price,
+                category_id: category_id,
+                supplier_id: supplier_id,
+            });
+
+            return res.status(201).json({
+                status: "success",
+                message: "Product updated successfully",
+            });
+        }
+
+        return res.status(400).json({
+            status: "failed",
+            message: "Invalid ID",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: "failed",
+            error: "Putting failed",
         });
     }
 });

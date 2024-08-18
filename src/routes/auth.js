@@ -6,6 +6,42 @@ import { User } from "../models/indexModels.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * '/auth/register':
+ *  post:
+ *     tags:
+ *     - Auth Controller
+ *     summary: Create a user
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - username
+ *              - email
+ *              - password
+ *            properties:
+ *              username:
+ *                type: string
+ *                default: maxra0303
+ *              email:
+ *                type: string
+ *                default: max@gmail.com
+ *              password:
+ *                type: string
+ *                default: MaxTrust
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      500:
+ *        description: Server Error
+ */
+
 router.post("/register", async (req, res) => {
     try {
         const { username, password, email } = req.body;
@@ -38,6 +74,38 @@ router.post("/register", async (req, res) => {
     }
 });
 
+/**
+ * @openapi
+ * '/auth/login':
+ *  post:
+ *     tags:
+ *     - Auth Controller
+ *     summary: Login as a user
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - username
+ *              - password
+ *            properties:
+ *              username:
+ *                type: string
+ *                default: maxra0303
+ *              password:
+ *                type: string
+ *                default: MaxTrust
+ *     responses:
+ *      200:
+ *        description: Loggined in
+ *      401:
+ *        description: Authentication failed
+ *      500:
+ *        description: Server Error
+ */
+
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -51,13 +119,11 @@ router.post("/login", async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({ error: "Authentication failed" });
         }
-        const accessToken = jwt.sign(
-            { userId: user.dataValues.id },
-            process.env.SECRETKEY,
-            {
+        const accessToken =
+            "Bearer " +
+            jwt.sign({ userId: user.dataValues.id }, process.env.SECRETKEY, {
                 expiresIn: "1h",
-            }
-        );
+            });
         const refreshToken = jwt.sign(
             { userId: user.dataValues.id },
             process.env.SECRETKEY,
@@ -79,6 +145,26 @@ router.post("/login", async (req, res) => {
     }
 });
 
+/**
+ * @openapi
+ * '/auth/logout':
+ *  post:
+ *     tags:
+ *     - Auth Controller
+ *     summary: Logout the user
+ *     security:
+ *       - Authorization: []
+ *     responses:
+ *      204:
+ *        description: Logged out
+ *      400:
+ *        description: Invalid token
+ *      401:
+ *        description: No token provided
+ *      500:
+ *        description: Server Error
+ */
+
 router.post("/logout", async (req, res) => {
     const accessToken = req.header("Authorization");
     const refreshToken = req.cookies["refreshToken"];
@@ -98,9 +184,29 @@ router.post("/logout", async (req, res) => {
     } catch (error) {
         return res
             .status(400)
-            .json({ status: "failed", error: "Invalid refresh token" });
+            .json({ status: "failed", error: "Invalid token" });
     }
 });
+
+/**
+ * @openapi
+ * '/auth/refresh':
+ *  post:
+ *     tags:
+ *     - Auth Controller
+ *     summary: Refresh access token
+ *     security:
+ *       - Authorization: []
+ *     responses:
+ *      200:
+ *        description: Created
+ *      400:
+ *        description: Invalid refresh token
+ *      401:
+ *        description: No token provided
+ *      500:
+ *        description: Server Error
+ */
 
 router.post("/refresh", async (req, res) => {
     const refreshToken = req.cookies["refreshToken"];
@@ -121,7 +227,7 @@ router.post("/refresh", async (req, res) => {
         );
         res.status(200)
             .header("Authorization", accessToken)
-            .json({ status: "success", message: decoded.userId });
+            .json({ status: "success" });
     } catch (error) {
         console.log(error);
         return res
