@@ -175,7 +175,7 @@ router.post("/", verifyToken, async (req, res) => {
  *                type: string
  *                enum: [Pending, Shipped, Delivered, Cancelled]
  *     responses:
- *      201:
+ *      200:
  *        description: Updated
  *      400:
  *        description: Bad request
@@ -191,7 +191,7 @@ router.put("/:id", verifyToken, isAdmin, async (req, res) => {
             if (order) {
                 order.update({ status: status });
 
-                return res.status(201).json({
+                return res.status(200).json({
                     status: "success",
                     message: "Order updated successfully",
                 });

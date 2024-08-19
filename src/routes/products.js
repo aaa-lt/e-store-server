@@ -149,7 +149,7 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
  * '/products/{id}':
  *  put:
  *     tags:
- *     - Order Controller
+ *     - Product Controller
  *     summary: Update the product
  *     parameters:
  *       - in: path
@@ -166,14 +166,29 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
  *        application/json:
  *           schema:
  *            type: object
- *            required:
- *              - products
  *            properties:
- *              status:
+ *              name:
  *                type: string
- *                enum: [Pending, Shipped, Delivered, Cancelled]
+ *                default: any
+ *              description:
+ *                type: string
+ *                default: any
+ *              quantity:
+ *                type: integer
+ *                default: 1
+ *              price:
+ *                type: integer
+ *                default: 0
+ *              category_id:
+ *                type: integer
+ *                default: 1
+ *              supplier_id:
+ *                type: integer
+ *                default: 1
+ *
+ *
  *     responses:
- *      201:
+ *      200:
  *        description: Updated
  *      400:
  *        description: Bad request
@@ -183,20 +198,29 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
 
 router.put("/:id", verifyToken, isAdmin, async (req, res) => {
     try {
-        const { name, description, quantity, price, category_id, supplier_id } =
-            req.body;
-        const product = await Order.findByPk(req.params.id);
-        if (product) {
-            await product.update({
-                name: name,
-                description: description,
-                quantity: quantity,
-                price: price,
-                category_id: category_id,
-                supplier_id: supplier_id,
-            });
+        const updates = {};
 
-            return res.status(201).json({
+        const fields = [
+            "name",
+            "description",
+            "quantity",
+            "price",
+            "category_id",
+            "supplier_id",
+        ];
+
+        fields.forEach((field) => {
+            if (req.body[field] !== undefined) {
+                updates[field] = req.body[field];
+            }
+        });
+
+        const product = await Product.findByPk(req.params.id);
+
+        if (product) {
+            await product.update(updates);
+
+            return res.status(200).json({
                 status: "success",
                 message: "Product updated successfully",
             });
@@ -211,6 +235,50 @@ router.put("/:id", verifyToken, isAdmin, async (req, res) => {
         return res.status(500).json({
             status: "failed",
             error: "Putting failed",
+        });
+    }
+});
+
+/**
+ * @openapi
+ * '/products/{id}':
+ *   delete:
+ *     tags:
+ *       - Product Controller
+ *     summary: Delete product
+ *     security:
+ *       - Authorization: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the product to delete
+ *     responses:
+ *       200:
+ *         description: Deleted Successfully
+ *       404:
+ *         description: Not found
+ *       500:
+ *         description: Server Error
+ */
+
+router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
+    try {
+        const product = await Product.findOne({ where: { id: req.params.id } });
+        if (product) {
+            product.destroy();
+            return res.status(200).json({
+                status: "success",
+                error: "Product deleted",
+            });
+        }
+        return res.status(404).send("Not found");
+    } catch (error) {
+        res.status(500).json({
+            status: "failed",
+            error: "Failed to delete product",
         });
     }
 });

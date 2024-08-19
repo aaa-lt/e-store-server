@@ -157,8 +157,6 @@ router.post("/login", async (req, res) => {
  *     responses:
  *      204:
  *        description: Logged out
- *      400:
- *        description: Invalid token
  *      401:
  *        description: No token provided
  *      500:
@@ -169,22 +167,26 @@ router.post("/logout", async (req, res) => {
     const accessToken = req.header("Authorization");
     const refreshToken = req.cookies["refreshToken"];
 
-    if (!accessToken || !refreshToken) {
+    if (!accessToken && !refreshToken) {
         return res
             .status(401)
             .json({ status: "failed", message: "Tokens are required" });
     }
 
     try {
-        // TODO remove tokens from client
-
-        res.status(204)
-            .header("Authorization", accessToken)
-            .json({ status: "success", message: decoded.userId });
-    } catch (error) {
         return res
-            .status(400)
-            .json({ status: "failed", error: "Invalid token" });
+            .status(204)
+            .cookie("refreshToken", "", {
+                httpOnly: true,
+                sameSite: "strict",
+            })
+            .header("Authorization", "")
+            .send();
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json({ status: "failed", error: "Logout failed" });
     }
 });
 
