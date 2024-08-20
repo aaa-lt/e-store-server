@@ -19,6 +19,8 @@ const router = Router();
  *        description: Server Error
  */
 
+// TODO Product, Search, Supplier, User migrate to controllers
+
 router.get("/", async (req, res) => {
     try {
         const filter = req.query.filter;
@@ -231,7 +233,6 @@ router.put("/:id", verifyToken, isAdmin, async (req, res) => {
             message: "Invalid ID",
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: "failed",
             error: "Putting failed",

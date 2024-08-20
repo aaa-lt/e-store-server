@@ -102,7 +102,6 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
             message: "Supplier created successfully",
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: "failed",
             error: "Creation failed",

@@ -1,8 +1,6 @@
 import { Router } from "express";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import "dotenv/config";
-import { User } from "../models/indexModels.js";
+import authController from "../controllers/auth.js";
+import verifyToken from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -42,37 +40,7 @@ const router = Router();
  *        description: Server Error
  */
 
-router.post("/register", async (req, res) => {
-    try {
-        const { username, password, email } = req.body;
-        const existingUsername = await User.findOne({
-            where: { username: username },
-        });
-        const existingEmail = await User.findOne({
-            where: { email: email },
-        });
-        if (existingUsername || existingEmail)
-            return res.status(409).json({
-                status: "failed",
-                error: "Already registered",
-            });
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.create({
-            username: username,
-            password: hashedPassword,
-            email: email,
-        });
-        res.status(201).json({
-            status: "success",
-            message: "User registered successfully",
-        });
-    } catch (error) {
-        res.status(500).json({
-            status: "failed",
-            error: "Registration failed",
-        });
-    }
-});
+router.post("/register", authController.registerUser);
 
 /**
  * @openapi
@@ -106,44 +74,7 @@ router.post("/register", async (req, res) => {
  *        description: Server Error
  */
 
-router.post("/login", async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        const user = await User.scope("withPassword").findOne({
-            where: { username: username },
-        });
-        if (user === null) {
-            return res.status(401).json({ error: "Authentication failed" });
-        }
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            return res.status(401).json({ error: "Authentication failed" });
-        }
-        const accessToken =
-            "Bearer " +
-            jwt.sign({ userId: user.dataValues.id }, process.env.SECRETKEY, {
-                expiresIn: "1h",
-            });
-        const refreshToken = jwt.sign(
-            { userId: user.dataValues.id },
-            process.env.SECRETKEY,
-            {
-                expiresIn: "1d",
-            }
-        );
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            sameSite: "strict",
-        })
-            .header("Authorization", accessToken)
-            .json({
-                status: "success",
-                message: "Logged in",
-            });
-    } catch (error) {
-        res.status(500).json({ status: "failed", error: "Login failed" });
-    }
-});
+router.post("/login", authController.loginUser);
 
 /**
  * @openapi
@@ -163,32 +94,7 @@ router.post("/login", async (req, res) => {
  *        description: Server Error
  */
 
-router.post("/logout", async (req, res) => {
-    const accessToken = req.header("Authorization");
-    const refreshToken = req.cookies["refreshToken"];
-
-    if (!accessToken && !refreshToken) {
-        return res
-            .status(401)
-            .json({ status: "failed", message: "Tokens are required" });
-    }
-
-    try {
-        return res
-            .status(204)
-            .cookie("refreshToken", "", {
-                httpOnly: true,
-                sameSite: "strict",
-            })
-            .header("Authorization", "")
-            .send();
-    } catch (error) {
-        console.log(error);
-        return res
-            .status(500)
-            .json({ status: "failed", error: "Logout failed" });
-    }
-});
+router.post("/logout", verifyToken, authController.logoutUser);
 
 /**
  * @openapi
@@ -210,32 +116,6 @@ router.post("/logout", async (req, res) => {
  *        description: Server Error
  */
 
-router.post("/refresh", async (req, res) => {
-    const refreshToken = req.cookies["refreshToken"];
-    if (!refreshToken) {
-        return res
-            .status(401)
-            .json({ status: "failed", error: "No refresh token" });
-    }
-
-    try {
-        const decoded = jwt.verify(refreshToken, process.env.SECRETKEY);
-        const accessToken = jwt.sign(
-            { userId: decoded.userId },
-            process.env.SECRETKEY,
-            {
-                expiresIn: "1h",
-            }
-        );
-        res.status(200)
-            .header("Authorization", accessToken)
-            .json({ status: "success" });
-    } catch (error) {
-        console.log(error);
-        return res
-            .status(400)
-            .json({ status: "failed", error: "Invalid refresh token" });
-    }
-});
+router.post("/refresh", authController.resfreshToken);
 
 export default router;

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-function verifyToken(req, res, next) {
+const verifyToken = (req, res, next) => {
     try {
         const token = req.header("Authorization").split(" ")[1];
         if (!token) return res.status(401).json({ error: "Access denied" });
@@ -9,8 +9,8 @@ function verifyToken(req, res, next) {
         req.userId = decoded.userId;
         next();
     } catch (error) {
-        res.status(401).json({ error: "Invalid token" });
+        return res.status(401).json({ error: "Invalid token" });
     }
-}
+};
 
 export default verifyToken;

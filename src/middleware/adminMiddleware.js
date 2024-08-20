@@ -12,7 +12,6 @@ async function isAdmin(req, res, next) {
             error: "No permission",
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             status: "failed",
             error: "Failed to get profile",
