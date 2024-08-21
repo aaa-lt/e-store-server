@@ -74,8 +74,8 @@ router.get("/:id", verifyToken, orderController.getOrder);
  *     responses:
  *      201:
  *        description: Created
- *      409:
- *        description: Conflict
+ *      400:
+ *        description: Bad request
  *      500:
  *        description: Server Error
  */

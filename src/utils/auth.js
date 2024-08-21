@@ -4,10 +4,8 @@ import "dotenv/config";
 
 const verifyUser = async (user, pass) => {
     try {
-        if (user === null || !(await bcrypt.compare(pass, user.password))) {
-            return false;
-        }
-        return true;
+        return !(user === null || !(await bcrypt.compare( pass, user.password )));
+
     } catch (error) {
         throw error;
     }

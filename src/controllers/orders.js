@@ -1,5 +1,7 @@
 import OrderProduct from "../models/OrderProduct.js";
 import Order from "../models/Order.js";
+import Product from "../models/Product.js";
+import sequelize from "../../config/db.js";
 
 const gerOrders = async (req, res) => {
     try {
@@ -13,23 +15,21 @@ const gerOrders = async (req, res) => {
     }
 };
 
-// TODO rewrite query
 const getOrder = async (req, res) => {
     try {
-        const order = await Order.findOne({ where: { id: req.params.id } });
+        const order = await Order.findOne({
+            where: { id: req.params.id },
+            include: [
+                {
+                    model: Product,
+                    attributes: ["id", "name"],
+                    through: {
+                        attributes: ["quantity"],
+                    },
+                },
+            ],
+        });
         if (order) {
-            const data = await OrderProduct.findAll({
-                where: { orderId: req.params.id },
-            });
-            order.dataValues.products = [];
-            for (const element of data) {
-                const dataSection = {
-                    ProductId: element.ProductId,
-                    quantity: element.quantity,
-                };
-                order.dataValues.products.push(dataSection);
-            }
-
             return res.status(200).send(order);
         }
         return res.status(404).send("Not found");
@@ -41,43 +41,61 @@ const getOrder = async (req, res) => {
     }
 };
 
-// TODO implement check for query accuracy
 const createOrder = async (req, res) => {
+    const transaction = await sequelize.transaction();
+
     try {
         const { products } = req.body;
-        if (products) {
-            const order = await Order.create({
-                user_id: req.userId,
-                status: "Pending",
-            });
+        if (products && products.length > 0) {
+            const order = await Order.create(
+                {
+                    user_id: req.userId,
+                    status: "Pending",
+                },
+                { transaction }
+            );
+            console.log(order);
             for (const element of products) {
-                await OrderProduct.create({
-                    OrderId: order.id,
-                    ProductId: element.ProductId,
-                    quantity: element.quantity,
-                });
+                await OrderProduct.create(
+                    {
+                        OrderId: order.id,
+                        ProductId: element.ProductId,
+                        quantity: element.quantity,
+                    },
+                    { transaction }
+                );
             }
+
+            await transaction.commit();
+
+            return res.status(201).json({
+                status: "success",
+                message: "Order created successfully",
+            });
         }
 
-        return res.status(201).json({
-            status: "success",
-            message: "Order created successfully",
+        await transaction.rollback();
+        return res.status(400).json({
+            status: "failed",
+            message: "No products provided",
         });
     } catch (error) {
         console.log(error);
+        await transaction.rollback();
         return res.status(500).json({
             status: "failed",
             error: "Creation failed",
         });
     }
 };
+
 const putOrder = async (req, res) => {
     try {
         const { status } = req.body;
         if (Order.getAttributes().status.values.includes(status)) {
             const order = await Order.findByPk(req.params.id);
             if (order) {
-                order.update({ status: status });
+                await order.update({ status: status });
 
                 return res.status(200).json({
                     status: "success",

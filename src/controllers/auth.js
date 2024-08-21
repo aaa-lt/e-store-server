@@ -5,8 +5,6 @@ import User from "../models/User.js";
 import uniqueUtility from "../utils/unique.js";
 import authUtility from "../utils/auth.js";
 
-// TODO Safe import data from user
-
 const registerUser = async (req, res) => {
     try {
         const { username, password, email } = req.body;
@@ -64,7 +62,6 @@ const loginUser = async (req, res) => {
                 message: "Logged in",
             });
     } catch (error) {
-        console.log(error);
         res.status(500).json({ status: "failed", error: "Login failed" });
     }
 };
