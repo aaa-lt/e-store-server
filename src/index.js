@@ -3,7 +3,7 @@ import sequelize from "../config/db.js";
 import cookieParser from "cookie-parser";
 import swaggerUI from "swagger-ui-express";
 import swaggerSpec from "../config/swagger.js";
-import routes from "./routes/indexRoutes.js";
+import routes from "./routes/index.js";
 
 const app = express();
 
@@ -30,4 +30,14 @@ syncDatabase().then(() => {
     app.listen(port, () => {
         console.log("Listening on", port);
     });
+});
+
+process.on("unhandledRejection", (reason, p) => {
+    console.error("Unhandled Rejection at:", p, "reason:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+    console.error(
+        `Caught exception: ${error}\n` + `Exception origin: ${error.stack}`
+    );
 });

@@ -1,6 +1,7 @@
 import { Router } from "express";
-import authController from "../controllers/auth.js";
-import verifyToken from "../middleware/authMiddleware.js";
+import authController from "../controllers/auth.controller.js";
+import verifyToken from "../middleware/verifyToken.middleware.js";
+import { validateNewUser } from "../middleware/validator.middleware.js";
 
 const router = Router();
 
@@ -40,7 +41,7 @@ const router = Router();
  *        description: Server Error
  */
 
-router.post("/register", authController.registerUser);
+router.post("/register", validateNewUser, authController.registerUser);
 
 /**
  * @openapi

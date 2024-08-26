@@ -13,7 +13,7 @@ const getProducts = async (req, res) => {
         res.status(200).send(products);
     } catch (error) {
         res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get information",
         });
     }
@@ -30,7 +30,7 @@ const getProduct = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get information",
         });
     }
@@ -53,7 +53,7 @@ const createProduct = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Creation failed",
         });
     }
@@ -90,12 +90,12 @@ const updateProduct = async (req, res) => {
         }
 
         return res.status(400).json({
-            status: "failed",
+            status: "error",
             message: "Invalid ID",
         });
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Putting failed",
         });
     }

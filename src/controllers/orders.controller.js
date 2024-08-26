@@ -9,7 +9,7 @@ const gerOrders = async (req, res) => {
         res.status(200).send(orders);
     } catch (error) {
         res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get information",
         });
     }
@@ -35,7 +35,7 @@ const getOrder = async (req, res) => {
         return res.status(404).send("Not found");
     } catch (error) {
         res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get information",
         });
     }
@@ -76,14 +76,14 @@ const createOrder = async (req, res) => {
 
         await transaction.rollback();
         return res.status(400).json({
-            status: "failed",
+            status: "error",
             message: "No products provided",
         });
     } catch (error) {
         console.log(error);
         await transaction.rollback();
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Creation failed",
         });
     }
@@ -104,17 +104,17 @@ const putOrder = async (req, res) => {
             }
 
             return res.status(400).json({
-                status: "failed",
+                status: "error",
                 message: "Invalid ID",
             });
         }
         return res.status(400).json({
-            status: "failed",
+            status: "error",
             message: "Invalid status",
         });
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Putting failed",
         });
     }

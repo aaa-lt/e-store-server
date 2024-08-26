@@ -1,12 +1,12 @@
 import Category from "../models/Category.js";
-import uniqueUtility from "../utils/unique.js";
+import uniqueUtility from "../utils/unique.utility.js";
 
 const getCategories = async (req, res) => {
     try {
         return res.status(200).send(await Category.findAll());
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get information",
         });
     }
@@ -17,7 +17,7 @@ const createCategory = async (req, res) => {
         const { name, description } = req.body;
         if (await uniqueUtility(Category, "name", name))
             return res.status(409).json({
-                status: "failed",
+                status: "error",
                 error: "Category with this name is already exists",
             });
         await Category.create({
@@ -30,7 +30,7 @@ const createCategory = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Creation failed",
         });
     }

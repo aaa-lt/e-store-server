@@ -6,7 +6,7 @@ const getSuppliers = async (req, res) => {
         return res.status(200).send(suppliers);
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get information",
         });
     }
@@ -20,7 +20,7 @@ const createSupplier = async (req, res) => {
 
         if (existingName)
             return res.status(409).json({
-                status: "failed",
+                status: "error",
                 error: "Supplier with this name is already exists",
             });
         const existingEmail = await Supplier.findOne({
@@ -29,7 +29,7 @@ const createSupplier = async (req, res) => {
 
         if (existingEmail)
             return res.status(409).json({
-                status: "failed",
+                status: "error",
                 error: "Supplier with this email is already exists",
             });
 
@@ -38,7 +38,7 @@ const createSupplier = async (req, res) => {
         });
         if (existingNumber)
             return res.status(409).json({
-                status: "failed",
+                status: "error",
                 error: "Supplier with this phone is already exists",
             });
 
@@ -53,7 +53,7 @@ const createSupplier = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Creation failed",
         });
     }

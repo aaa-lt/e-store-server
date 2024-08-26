@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { passwordCompare } from "../services/bcrypt.service.js";
 import "dotenv/config";
 
 const verifyUser = async (user, pass) => {
     try {
-        return !(user === null || !(await bcrypt.compare( pass, user.password )));
-
+        return !(
+            user === null || !(await passwordCompare(pass, user.password))
+        );
     } catch (error) {
         throw error;
     }

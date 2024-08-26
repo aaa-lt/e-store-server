@@ -1,17 +1,17 @@
 import { Router } from "express";
-import verifyToken from "../middleware/authMiddleware.js";
-import isAdmin from "../middleware/adminMiddleware.js";
-import supplierController from "../controllers/suppliers.js";
+import verifyToken from "../middleware/verifyToken.middleware.js";
+import isAdmin from "../middleware/isAdmin.middleware.js";
+import categoryController from "../controllers/categories.controller.js";
 
 const router = Router();
 
 /**
  * @openapi
- * '/suppliers':
+ * '/categories':
  *  get:
  *     tags:
- *     - Supplier Controller
- *     summary: Get product suppliers
+ *     - Category Controller
+ *     summary: Get product categories
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -19,15 +19,15 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/", supplierController.getSuppliers);
+router.get("/", categoryController.getCategories);
 
 /**
  * @openapi
- * '/suppliers':
+ * '/categories':
  *  post:
  *     tags:
- *     - Supplier Controller
- *     summary: Create a supplier
+ *     - Category Controller
+ *     summary: Create a category
  *     security:
  *       - Authorization: []
  *     requestBody:
@@ -42,6 +42,9 @@ router.get("/", supplierController.getSuppliers);
  *              name:
  *                type: string
  *                default: any
+ *              description:
+ *                type: string
+ *                default: any
  *     responses:
  *      201:
  *        description: Created
@@ -51,6 +54,6 @@ router.get("/", supplierController.getSuppliers);
  *        description: Server Error
  */
 
-router.post("/", verifyToken, isAdmin, supplierController.createSupplier);
+router.post("/", verifyToken, isAdmin, categoryController.createCategory);
 
 export default router;

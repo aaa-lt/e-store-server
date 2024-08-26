@@ -1,24 +1,15 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import "dotenv/config";
 import User from "../models/User.js";
-import uniqueUtility from "../utils/unique.js";
-import authUtility from "../utils/auth.js";
+import authUtility from "../utils/auth.utility.js";
+import { passwordHash } from "../services/bcrypt.service.js";
 
 const registerUser = async (req, res) => {
     try {
         const { username, password, email } = req.body;
-        if (
-            (await uniqueUtility(User, "email", email)) ||
-            (await uniqueUtility(User, "username", username))
-        )
-            return res.status(409).json({
-                status: "failed",
-                error: "Already registered",
-            });
         await User.create({
             username: username,
-            password: await bcrypt.hash(password, 10),
+            password: await passwordHash(password),
             email: email,
         });
         res.status(201).json({
@@ -27,7 +18,7 @@ const registerUser = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Registration failed",
         });
     }
@@ -42,7 +33,7 @@ const loginUser = async (req, res) => {
         if (!(await authUtility.verifyUser(user, password))) {
             return res
                 .status(401)
-                .json({ status: "failed", error: "Invalid credentials" });
+                .json({ status: "error", error: "Invalid credentials" });
         }
 
         res.cookie(
@@ -62,7 +53,7 @@ const loginUser = async (req, res) => {
                 message: "Logged in",
             });
     } catch (error) {
-        res.status(500).json({ status: "failed", error: "Login failed" });
+        res.status(500).json({ status: "error", error: "Login failed" });
     }
 };
 
@@ -72,7 +63,7 @@ const logoutUser = async (req, res) => {
     if (!refreshToken) {
         return res
             .status(401)
-            .json({ status: "failed", message: "Token is required" });
+            .json({ status: "error", message: "Token is required" });
     }
 
     try {
@@ -87,7 +78,7 @@ const logoutUser = async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ status: "failed", error: "Logout failed" });
+            .json({ status: "error", error: "Logout failed" });
     }
 };
 
@@ -96,7 +87,7 @@ const resfreshToken = async (req, res) => {
     if (!refreshToken) {
         return res
             .status(401)
-            .json({ status: "failed", error: "No refresh token" });
+            .json({ status: "error", error: "No refresh token" });
     }
 
     try {
@@ -111,7 +102,7 @@ const resfreshToken = async (req, res) => {
     } catch (error) {
         return res
             .status(400)
-            .json({ status: "failed", error: "Invalid refresh token" });
+            .json({ status: "error", error: "Invalid refresh token" });
     }
 };
 

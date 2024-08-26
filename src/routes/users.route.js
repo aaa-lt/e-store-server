@@ -1,7 +1,7 @@
 import { Router } from "express";
-import verifyToken from "../middleware/authMiddleware.js";
-import isAdmin from "../middleware/adminMiddleware.js";
-import userController from "../controllers/users.js";
+import verifyToken from "../middleware/verifyToken.middleware.js";
+import isAdmin from "../middleware/isAdmin.middleware.js";
+import { getMyUser, getUser } from "../controllers/users.controller.js";
 
 const router = Router();
 
@@ -21,7 +21,7 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/me", verifyToken, userController.getMyUser);
+router.get("/me", verifyToken, getMyUser);
 
 /**
  * @openapi
@@ -46,6 +46,6 @@ router.get("/me", verifyToken, userController.getMyUser);
  *        description: Server Error
  */
 
-router.get("/:id", verifyToken, isAdmin, userController.getUser);
+router.get("/:id", verifyToken, isAdmin, getUser);
 
 export default router;

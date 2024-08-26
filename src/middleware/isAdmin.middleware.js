@@ -1,19 +1,18 @@
-import User from "../models/User.js";
+import { getUserById } from "../services/user.service.js";
 
 async function isAdmin(req, res, next) {
-    const profile = await User.findByPk(req.userId);
+    const profile = await getUserById(req.userId);
     try {
         if (profile.is_admin) {
-            req.profile = profile;
             return next();
         }
         res.status(403).json({
-            status: "failed",
+            status: "error",
             error: "No permission",
         });
     } catch (error) {
         res.status(500).json({
-            status: "failed",
+            status: "error",
             error: "Failed to get profile",
         });
     }
