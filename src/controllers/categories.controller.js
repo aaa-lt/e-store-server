@@ -1,9 +1,12 @@
-import Category from "../models/Category.js";
-import uniqueUtility from "../utils/unique.utility.js";
+import {
+    getAllCategories,
+    addCategory,
+} from "../services/categories.service.js";
+import { categoryDTO } from "../dto/categories.dto.js";
 
 const getCategories = async (req, res) => {
     try {
-        return res.status(200).send(await Category.findAll());
+        return res.status(200).send(await getAllCategories());
     } catch (error) {
         return res.status(500).json({
             status: "error",
@@ -14,16 +17,7 @@ const getCategories = async (req, res) => {
 
 const createCategory = async (req, res) => {
     try {
-        const { name, description } = req.body;
-        if (await uniqueUtility(Category, "name", name))
-            return res.status(409).json({
-                status: "error",
-                error: "Category with this name is already exists",
-            });
-        await Category.create({
-            name: name,
-            description: description,
-        });
+        await addCategory(categoryDTO(req.body));
         return res.status(201).json({
             status: "success",
             message: "Category created successfully",

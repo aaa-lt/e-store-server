@@ -65,7 +65,7 @@ const logoutUser = async (req, res) => {
     }
 };
 
-const resfreshToken = async (req, res) => {
+const refreshToken = async (req, res) => {
     const refreshToken = req.cookies["refreshToken"];
     if (!refreshToken) {
         return res
@@ -89,4 +89,4 @@ const resfreshToken = async (req, res) => {
     }
 };
 
-export default { registerUser, loginUser, logoutUser, resfreshToken };
+export default { registerUser, loginUser, logoutUser, resfreshToken: refreshToken };

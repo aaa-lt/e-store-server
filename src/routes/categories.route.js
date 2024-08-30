@@ -2,6 +2,7 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import categoryController from "../controllers/categories.controller.js";
+import { validateNewCategory } from "../middleware/validator.middleware.js";
 
 const router = Router();
 
@@ -54,6 +55,12 @@ router.get("/", categoryController.getCategories);
  *        description: Server Error
  */
 
-router.post("/", verifyToken, isAdmin, categoryController.createCategory);
+router.post(
+    "/",
+    verifyToken,
+    isAdmin,
+    validateNewCategory,
+    categoryController.createCategory
+);
 
 export default router;
