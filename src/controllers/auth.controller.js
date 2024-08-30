@@ -1,17 +1,12 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import User from "../models/User.js";
 import authUtility from "../utils/auth.utility.js";
-import { passwordHash } from "../services/bcrypt.service.js";
+import { userCreateDTO, userVerifyDTO } from "../dto/user.dto.js";
+import { createUser, verifyUser } from "../services/user.service.js";
 
 const registerUser = async (req, res) => {
     try {
-        const { username, password, email } = req.body;
-        await User.create({
-            username: username,
-            password: await passwordHash(password),
-            email: email,
-        });
+        await createUser(await userCreateDTO(req.body));
         res.status(201).json({
             status: "success",
             message: "User registered successfully",
@@ -26,28 +21,18 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.scope("withPassword").findOne({
-            where: { username: username },
-        });
-        if (!(await authUtility.verifyUser(user, password))) {
+        const id = await verifyUser(await userVerifyDTO(req.body));
+        if (!id) {
             return res
                 .status(401)
                 .json({ status: "error", error: "Invalid credentials" });
         }
 
-        res.cookie(
-            "refreshToken",
-            authUtility.createRefreshToken(user.dataValues.id),
-            {
-                httpOnly: true,
-                sameSite: "strict",
-            }
-        )
-            .header(
-                "Authorization",
-                authUtility.createAccessToken(user.dataValues.id)
-            )
+        res.cookie("refreshToken", authUtility.createRefreshToken(id), {
+            httpOnly: true,
+            sameSite: "strict",
+        })
+            .header("Authorization", authUtility.createAccessToken(id))
             .json({
                 status: "success",
                 message: "Logged in",
@@ -58,9 +43,7 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
-    const refreshToken = req.cookies["refreshToken"];
-
-    if (!refreshToken) {
+    if (!req.cookies["refreshToken"]) {
         return res
             .status(401)
             .json({ status: "error", message: "Token is required" });

@@ -1,17 +1,5 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import { passwordCompare } from "../services/bcrypt.service.js";
 import "dotenv/config";
-
-const verifyUser = async (user, pass) => {
-    try {
-        return !(
-            user === null || !(await passwordCompare(pass, user.password))
-        );
-    } catch (error) {
-        throw error;
-    }
-};
 
 const createAccessToken = (userId) => {
     return (
@@ -28,4 +16,4 @@ const createRefreshToken = (userId) => {
     });
 };
 
-export default { verifyUser, createAccessToken, createRefreshToken };
+export default { createAccessToken, createRefreshToken };

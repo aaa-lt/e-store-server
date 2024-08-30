@@ -13,7 +13,6 @@ export const validateNewUser = async (req, res, next) => {
                         throw new Error();
                     }
                 } catch (error) {
-                    console.log(error);
                     if (error.message !== "User not found") {
                         throw new Error("Username already in use");
                     }
