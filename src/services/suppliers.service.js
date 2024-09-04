@@ -1,5 +1,12 @@
 import Supplier from "../models/Supplier.js";
-import { supplierDTO } from "../dto/suppliers.dto.js";
+
+export const getSupplierById = async (id) => {
+    const supplier = await Supplier.findByPk(id);
+    if (!supplier) {
+        return undefined;
+    }
+    return supplier;
+};
 
 export const getSupplierByName = async (name) => {
     const supplier = await Supplier.findOne({
@@ -8,9 +15,9 @@ export const getSupplierByName = async (name) => {
         },
     });
     if (!supplier) {
-        throw new Error("Supplier not found");
+        return undefined;
     }
-    return supplierDTO(supplier);
+    return supplier;
 };
 
 export const getSupplierByEmail = async (email) => {
@@ -20,9 +27,9 @@ export const getSupplierByEmail = async (email) => {
         },
     });
     if (!supplier) {
-        throw new Error("Supplier not found");
+        return undefined;
     }
-    return supplierDTO(supplier);
+    return supplier;
 };
 
 export const getSupplierByPhone = async (phone) => {
@@ -32,9 +39,9 @@ export const getSupplierByPhone = async (phone) => {
         },
     });
     if (!supplier) {
-        throw new Error("Supplier not found");
+        return undefined;
     }
-    return supplierDTO(supplier);
+    return supplier;
 };
 
 export const getAllSuppliers = async () => {

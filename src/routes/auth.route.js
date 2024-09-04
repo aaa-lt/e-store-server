@@ -1,7 +1,11 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
 import verifyToken from "../middleware/verifyToken.middleware.js";
-import { validateNewUser } from "../middleware/validator.middleware.js";
+import { validateData } from "../middleware/validator.middleware.js";
+import {
+    userLoginSchema,
+    userRegistrationSchema,
+} from "../schemas/user.schema.js";
 
 const router = Router();
 
@@ -41,7 +45,11 @@ const router = Router();
  *        description: Server Error
  */
 
-router.post("/register", validateNewUser, authController.registerUser);
+router.post(
+    "/register",
+    validateData(userRegistrationSchema),
+    authController.userRegisterController
+);
 
 /**
  * @openapi
@@ -68,14 +76,18 @@ router.post("/register", validateNewUser, authController.registerUser);
  *                default: MaxTrust
  *     responses:
  *      200:
- *        description: Loggined in
+ *        description: Logged in
  *      401:
  *        description: Authentication failed
  *      500:
  *        description: Server Error
  */
 
-router.post("/login", authController.loginUser);
+router.post(
+    "/login",
+    validateData(userLoginSchema),
+    authController.userLoginController
+);
 
 /**
  * @openapi
@@ -95,28 +107,6 @@ router.post("/login", authController.loginUser);
  *        description: Server Error
  */
 
-router.post("/logout", verifyToken, authController.logoutUser);
-
-/**
- * @openapi
- * '/auth/refresh':
- *  post:
- *     tags:
- *     - Auth Controller
- *     summary: Refresh access token
- *     security:
- *       - Authorization: []
- *     responses:
- *      200:
- *        description: Created
- *      400:
- *        description: Invalid refresh token
- *      401:
- *        description: No token provided
- *      500:
- *        description: Server Error
- */
-
-router.post("/refresh", authController.resfreshToken);
+router.post("/logout", verifyToken, authController.userLogoutController);
 
 export default router;

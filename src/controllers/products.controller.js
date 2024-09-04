@@ -1,16 +1,15 @@
 import Product from "../models/Product.js";
+import {
+    getAllProducts,
+    getProductById,
+    addProduct,
+    updateProductById,
+} from "../services/products.service.js";
+import { manipulateProductDTO } from "../dto/products.dto.js";
 
 const getProducts = async (req, res) => {
     try {
-        const filter = req.query.filter;
-        if (filter === "category" || filter === "supplier") {
-            const products = await Product.findAll({
-                order: [[filter + "_id"]],
-            });
-            return res.status(200).send(products);
-        }
-        const products = await Product.findAll();
-        res.status(200).send(products);
+        res.status(200).send(await getAllProducts(req.query.filter));
     } catch (error) {
         res.status(500).json({
             status: "error",
@@ -20,33 +19,19 @@ const getProducts = async (req, res) => {
 };
 const getProduct = async (req, res) => {
     try {
-        const product = await Product.findOne({
-            where: { id: req.params.id },
-        });
-        if (product) {
-            return res.status(200).send(product);
-        }
-        return res.status(404).send("Not found");
+        return res.status(200).send(await getProductById(req.params.id));
     } catch (error) {
         console.log(error);
-        res.status(500).json({
+        res.status(404).json({
             status: "error",
-            error: "Failed to get information",
+            error: "Not found",
         });
     }
 };
 const createProduct = async (req, res) => {
     try {
-        const { name, description, quantity, price, category_id, supplier_id } =
-            req.body;
-        await Product.create({
-            name: name,
-            description: description,
-            quantity: quantity,
-            price: price,
-            category_id: category_id,
-            supplier_id: supplier_id,
-        });
+        await addProduct(manipulateProductDTO(req.body));
+
         return res.status(201).json({
             status: "success",
             message: "Product created successfully",
@@ -59,41 +44,17 @@ const createProduct = async (req, res) => {
     }
 };
 
+// TODO rewrite update query
+
 const updateProduct = async (req, res) => {
     try {
-        const updates = {};
-
-        const fields = [
-            "name",
-            "description",
-            "quantity",
-            "price",
-            "category_id",
-            "supplier_id",
-        ];
-
-        fields.forEach((field) => {
-            if (req.body[field] !== undefined) {
-                updates[field] = req.body[field];
-            }
-        });
-
-        const product = await Product.findByPk(req.params.id);
-
-        if (product) {
-            await product.update(updates);
-
-            return res.status(200).json({
-                status: "success",
-                message: "Product updated successfully",
-            });
-        }
-
-        return res.status(400).json({
-            status: "error",
-            message: "Invalid ID",
+        await updateProductById(req.params.id, manipulateProductDTO(req.body));
+        res.status(200).json({
+            status: "success",
+            message: "Product updated successfully",
         });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             status: "error",
             error: "Putting failed",

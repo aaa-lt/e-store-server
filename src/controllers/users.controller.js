@@ -2,8 +2,7 @@ import { getUserById } from "../services/user.service.js";
 
 export const getMyUser = async (req, res) => {
     try {
-        const userDTO = await getUserById(req.userId);
-        res.status(200).send(userDTO);
+        res.status(200).send(await getUserById(req.userId));
     } catch (error) {
         res.status(404).json({
             status: "error",

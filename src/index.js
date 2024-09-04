@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import swaggerUI from "swagger-ui-express";
 import swaggerSpec from "../config/swagger.js";
 import routes from "./routes/index.js";
+import errorCatcher from "./utils/catcher.utility.js";
 
 const app = express();
 
@@ -23,6 +24,7 @@ const port = 3000;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(errorCatcher);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use("/", routes);
 
@@ -30,14 +32,4 @@ syncDatabase().then(() => {
     app.listen(port, () => {
         console.log("Listening on", port);
     });
-});
-
-process.on("unhandledRejection", (reason, p) => {
-    console.error("Unhandled Rejection at:", p, "reason:", reason);
-});
-
-process.on("uncaughtException", (error) => {
-    console.error(
-        `Caught exception: ${error}\n` + `Exception origin: ${error.stack}`
-    );
 });

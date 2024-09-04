@@ -2,6 +2,7 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import productController from "../controllers/products.controller.js";
+import { validateUpdateProduct } from "../middleware/validator.middleware.js";
 
 const router = Router();
 
@@ -12,6 +13,14 @@ const router = Router();
  *     tags:
  *     - Product Controller
  *     summary: Get products
+ *     parameters:
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - category
+ *             - supplier
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -144,6 +153,12 @@ router.post("/", verifyToken, isAdmin, productController.createProduct);
  *        description: Server Error
  */
 
-router.put("/:id", verifyToken, isAdmin, productController.updateProduct);
+router.put(
+    "/:id",
+    verifyToken,
+    isAdmin,
+    validateUpdateProduct,
+    productController.updateProduct
+);
 
 export default router;

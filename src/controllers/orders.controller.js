@@ -2,11 +2,11 @@ import OrderProduct from "../models/OrderProduct.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import sequelize from "../../config/db.js";
+import { getAllOrders, getOrderById } from "../services/orders.service.js";
 
 const gerOrders = async (req, res) => {
     try {
-        const orders = await Order.findAll();
-        res.status(200).send(orders);
+        res.status(200).send(await getAllOrders());
     } catch (error) {
         res.status(500).json({
             status: "error",
@@ -17,18 +17,7 @@ const gerOrders = async (req, res) => {
 
 const getOrder = async (req, res) => {
     try {
-        const order = await Order.findOne({
-            where: { id: req.params.id },
-            include: [
-                {
-                    model: Product,
-                    attributes: ["id", "name"],
-                    through: {
-                        attributes: ["quantity"],
-                    },
-                },
-            ],
-        });
+        const order = await getOrderById(req.params.id);
         if (order) {
             return res.status(200).send(order);
         }
@@ -46,6 +35,13 @@ const createOrder = async (req, res) => {
 
     try {
         const { products } = req.body;
+        console.log(
+            "AAA:",
+            typeof products,
+            typeof products[0],
+            "========",
+            products
+        );
         if (products && products.length > 0) {
             const order = await Order.create(
                 {
@@ -54,7 +50,6 @@ const createOrder = async (req, res) => {
                 },
                 { transaction }
             );
-            console.log(order);
             for (const element of products) {
                 await OrderProduct.create(
                     {

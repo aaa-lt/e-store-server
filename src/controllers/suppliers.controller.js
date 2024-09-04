@@ -1,6 +1,11 @@
 import { supplierDTO } from "../dto/suppliers.dto.js";
-import Supplier from "../models/Supplier.js";
-import { addSupplier, getAllSuppliers } from "../services/suppliers.service.js";
+import {
+    addSupplier,
+    getAllSuppliers,
+    getSupplierByEmail,
+    getSupplierByName,
+    getSupplierByPhone,
+} from "../services/suppliers.service.js";
 
 const getSuppliers = async (req, res) => {
     try {
@@ -14,13 +19,21 @@ const getSuppliers = async (req, res) => {
 };
 const createSupplier = async (req, res) => {
     try {
-        addSupplier(supplierDTO(req.body));
+        if (
+            (await getSupplierByEmail(req.body.contact_email)) ||
+            (await getSupplierByName(req.body.name)) ||
+            (await getSupplierByPhone(req.body.phone_number))
+        ) {
+            return res.status(409).send("Duplicate found");
+        }
+        await addSupplier(req.body);
 
         return res.status(201).json({
             status: "success",
             message: "Supplier created successfully",
         });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             status: "error",
             error: "Creation failed",
