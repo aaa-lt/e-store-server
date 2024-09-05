@@ -28,6 +28,7 @@
     "@babel/core": "^7.25.2",
     "@babel/node": "^7.25.0",
     "@babel/preset-env": "^7.25.3",
+    "@faker-js/faker": "^9.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "body-parser": "^1.20.2",
     "nodemon": "^3.1.4"
