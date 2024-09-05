@@ -1,9 +1,10 @@
 import { getUserById } from "../services/user.service.js";
 
 async function isAdmin(req, res, next) {
-    const profile = await getUserById(req.userId);
+    const user = await getUserById(req.userId);
     try {
-        if (profile.is_admin) {
+        if (user.is_admin) {
+            req.user = user;
             return next();
         }
         res.status(403).json({

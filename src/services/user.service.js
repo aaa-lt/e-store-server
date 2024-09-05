@@ -4,47 +4,31 @@ import authUtility from "../utils/auth.utility.js";
 import jwt from "jsonwebtoken";
 
 export const getUserById = async (id) => {
-    const user = await User.findByPk(id);
-    if (!user) {
-        return undefined;
-    }
-    return user;
+    return await User.findByPk(id);
 };
 
 export const getUserByUsername = async (username) => {
-    const user = await User.findOne({
+    return await User.findOne({
         where: {
             username: username,
         },
     });
-    if (!user) {
-        return undefined;
-    }
-    return user;
 };
 
 export const getUserPasswordByUsername = async (username) => {
-    const user = await User.scope("withPassword").findOne({
+    return await User.scope("withPassword").findOne({
         where: {
             username: username,
         },
     });
-    if (!user) {
-        return undefined;
-    }
-    return user;
 };
 
 export const getUserByEmail = async (email) => {
-    const user = await User.findOne({
+    return await User.findOne({
         where: {
             email: email,
         },
     });
-    if (!user) {
-        return undefined;
-    }
-    return user;
 };
 
 export const userRegisterService = async (reqBody) => {

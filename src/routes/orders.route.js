@@ -2,6 +2,11 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import orderController from "../controllers/orders.controller.js";
+import { validateData } from "../middleware/validator.middleware.js";
+import {
+    orderUpdateSchema,
+    orderCreationSchema,
+} from "../schemas/order.schema.js";
 
 const router = Router();
 
@@ -21,7 +26,7 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/", verifyToken, isAdmin, orderController.gerOrders);
+router.get("/", verifyToken, isAdmin, orderController.getOrdersController);
 
 /**
  * @openapi
@@ -80,7 +85,12 @@ router.get("/:id", verifyToken, orderController.getOrder);
  *        description: Server Error
  */
 
-router.post("/", verifyToken, orderController.createOrder);
+router.post(
+    "/",
+    verifyToken,
+    validateData(orderCreationSchema),
+    orderController.createOrderController
+);
 
 /**
  * @openapi
@@ -119,6 +129,12 @@ router.post("/", verifyToken, orderController.createOrder);
  *        description: Server Error
  */
 
-router.put("/:id", verifyToken, isAdmin, orderController.putOrder);
+router.put(
+    "/:id",
+    verifyToken,
+    isAdmin,
+    validateData(orderUpdateSchema),
+    orderController.putOrder
+);
 
 export default router;

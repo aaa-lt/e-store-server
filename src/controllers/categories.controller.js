@@ -1,6 +1,6 @@
 import {
     getAllCategories,
-    addCategory,
+    createCategoryService,
 } from "../services/categories.service.js";
 import { categoryDTO } from "../dto/categories.dto.js";
 
@@ -17,7 +17,7 @@ const getCategories = async (req, res) => {
 
 const createCategory = async (req, res) => {
     try {
-        await addCategory(categoryDTO(req.body));
+        await createCategoryService(categoryDTO(req.body));
         return res.status(201).json({
             status: "success",
             message: "Category created successfully",

@@ -1,4 +1,3 @@
-import { supplierDTO } from "../dto/suppliers.dto.js";
 import {
     addSupplier,
     getAllSuppliers,

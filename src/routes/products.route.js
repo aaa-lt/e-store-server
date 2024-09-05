@@ -2,7 +2,11 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import productController from "../controllers/products.controller.js";
-import { validateUpdateProduct } from "../middleware/validator.middleware.js";
+import { validateData } from "../middleware/validator.middleware.js";
+import {
+    productCreationSchema,
+    productUpdateSchema,
+} from "../schemas/product.schema.js";
 
 const router = Router();
 
@@ -99,7 +103,13 @@ router.get("/:id", productController.getProduct);
  *        description: Server Error
  */
 
-router.post("/", verifyToken, isAdmin, productController.createProduct);
+router.post(
+    "/",
+    verifyToken,
+    isAdmin,
+    validateData(productCreationSchema),
+    productController.createProduct
+);
 
 /**
  * @openapi
@@ -157,7 +167,7 @@ router.put(
     "/:id",
     verifyToken,
     isAdmin,
-    validateUpdateProduct,
+    validateData(productUpdateSchema),
     productController.updateProduct
 );
 

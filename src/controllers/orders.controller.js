@@ -2,9 +2,14 @@ import OrderProduct from "../models/OrderProduct.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import sequelize from "../../config/db.js";
-import { getAllOrders, getOrderById } from "../services/orders.service.js";
+import {
+    getAllOrders,
+    getOrderById,
+    createOrderService,
+} from "../services/orders.service.js";
+import { or } from "sequelize";
 
-const gerOrders = async (req, res) => {
+const getOrdersController = async (req, res) => {
     try {
         res.status(200).send(await getAllOrders());
     } catch (error) {
@@ -30,53 +35,22 @@ const getOrder = async (req, res) => {
     }
 };
 
-const createOrder = async (req, res) => {
-    const transaction = await sequelize.transaction();
-
+const createOrderController = async (req, res) => {
     try {
-        const { products } = req.body;
-        console.log(
-            "AAA:",
-            typeof products,
-            typeof products[0],
-            "========",
-            products
-        );
-        if (products && products.length > 0) {
-            const order = await Order.create(
-                {
-                    user_id: req.userId,
-                    status: "Pending",
-                },
-                { transaction }
-            );
-            for (const element of products) {
-                await OrderProduct.create(
-                    {
-                        OrderId: order.id,
-                        ProductId: element.ProductId,
-                        quantity: element.quantity,
-                    },
-                    { transaction }
-                );
-            }
-
-            await transaction.commit();
-
-            return res.status(201).json({
-                status: "success",
-                message: "Order created successfully",
+        const order = await createOrderService(req.userId, req.body.products);
+        if (!order) {
+            res.status(400).json({
+                status: "error",
+                message: "Invalid products provided",
             });
         }
-
-        await transaction.rollback();
-        return res.status(400).json({
-            status: "error",
-            message: "No products provided",
+        return res.status(201).json({
+            status: "success",
+            message: "Order created successfully",
+            data: order,
         });
     } catch (error) {
         console.log(error);
-        await transaction.rollback();
         return res.status(500).json({
             status: "error",
             error: "Creation failed",
@@ -87,25 +61,18 @@ const createOrder = async (req, res) => {
 const putOrder = async (req, res) => {
     try {
         const { status } = req.body;
-        if (Order.getAttributes().status.values.includes(status)) {
-            const order = await Order.findByPk(req.params.id);
-            if (order) {
-                await order.update({ status: status });
-
-                return res.status(200).json({
-                    status: "success",
-                    message: "Order updated successfully",
-                });
-            }
-
+        const order = await getOrderById(req.params.id);
+        if (!order) {
             return res.status(400).json({
                 status: "error",
                 message: "Invalid ID",
             });
         }
-        return res.status(400).json({
-            status: "error",
-            message: "Invalid status",
+        await order.update({ status: status });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Order updated successfully",
         });
     } catch (error) {
         return res.status(500).json({
@@ -115,4 +82,9 @@ const putOrder = async (req, res) => {
     }
 };
 
-export default { gerOrders, getOrder, createOrder, putOrder };
+export default {
+    getOrdersController,
+    getOrder,
+    createOrderController,
+    putOrder,
+};

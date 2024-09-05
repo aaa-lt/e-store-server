@@ -24,13 +24,13 @@ export const addProduct = async (product) => {
     });
 };
 
-export const updateProductById = async (id, data) => {
+export const updateProductById = async (id, reqBody) => {
     const updates = {};
 
-    for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-            if (data[key] !== undefined) {
-                updates[key] = data[key];
+    for (const key in reqBody) {
+        if (Object.prototype.hasOwnProperty.call(reqBody, key)) {
+            if (reqBody[key] !== undefined) {
+                updates[key] = reqBody[key];
             }
         }
     }

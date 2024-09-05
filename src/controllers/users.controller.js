@@ -12,8 +12,8 @@ export const getMyUser = async (req, res) => {
 };
 export const getUser = async (req, res) => {
     try {
-        const userDTO = await getUserById(req.params.id);
-        res.status(200).send(userDTO);
+        const user = await getUserById(req.params.id);
+        res.status(200).send(user);
     } catch (error) {
         res.status(404).json({
             status: "error",

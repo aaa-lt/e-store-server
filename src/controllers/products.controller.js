@@ -1,11 +1,11 @@
-import Product from "../models/Product.js";
 import {
     getAllProducts,
     getProductById,
     addProduct,
     updateProductById,
 } from "../services/products.service.js";
-import { manipulateProductDTO } from "../dto/products.dto.js";
+import { getSupplierById } from "../services/suppliers.service.js";
+import { getCategoryById } from "../services/categories.service.js";
 
 const getProducts = async (req, res) => {
     try {
@@ -30,7 +30,13 @@ const getProduct = async (req, res) => {
 };
 const createProduct = async (req, res) => {
     try {
-        await addProduct(manipulateProductDTO(req.body));
+        if (!(await getSupplierById(req.body.supplier_id))) {
+            return res.status(400).send("Invalid supplier_id");
+        }
+        if (!(await getCategoryById(req.body.category_id))) {
+            return res.status(400).send("Invalid category_id");
+        }
+        await addProduct(req.body);
 
         return res.status(201).json({
             status: "success",
@@ -44,11 +50,17 @@ const createProduct = async (req, res) => {
     }
 };
 
-// TODO rewrite update query
-
 const updateProduct = async (req, res) => {
     try {
-        await updateProductById(req.params.id, manipulateProductDTO(req.body));
+        if (
+            Object.keys(req.body).length === 0 ||
+            !(await getProductById(req.params.id)) ||
+            !(await getSupplierById(req.body.supplier_id)) ||
+            !(await getCategoryById(req.body.category_id))
+        ) {
+            return res.status(400).send("Invalid data provided");
+        }
+        await updateProductById(req.params.id, req.body);
         res.status(200).json({
             status: "success",
             message: "Product updated successfully",
