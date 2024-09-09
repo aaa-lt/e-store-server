@@ -25,7 +25,25 @@ const port = 3000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(errorCatcher);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+app.use(
+    "/api-docs",
+    swaggerUI.serve,
+    swaggerUI.setup(swaggerSpec, {
+        swaggerOptions: { displayRequestDuration: true },
+    })
+);
+
+app.use((req, res, next) => {
+    const start = Date.now();
+
+    res.on("finish", () => {
+        const duration = Date.now() - start;
+        console.log(`${req.method} ${req.originalUrl} - ${duration}ms`);
+    });
+
+    next();
+});
+
 app.use("/", routes);
 
 syncDatabase().then(() => {

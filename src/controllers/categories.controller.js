@@ -1,6 +1,6 @@
 import {
-    getAllCategories,
     createCategoryService,
+    getAllCategories,
 } from "../services/categories.service.js";
 
 const getCategories = async (req, res) => {

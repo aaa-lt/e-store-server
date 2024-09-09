@@ -32,7 +32,6 @@ const createSupplier = async (req, res) => {
             message: "Supplier created successfully",
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: "error",
             error: "Creation failed",

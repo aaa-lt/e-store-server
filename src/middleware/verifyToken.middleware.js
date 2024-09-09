@@ -27,7 +27,6 @@ const verifyToken = (req, res, next) => {
                 error: "No token provided",
             });
         } catch (error) {
-            console.log(error);
             return res
                 .status(400)
                 .json({ status: "error", error: "Invalid refresh token" });

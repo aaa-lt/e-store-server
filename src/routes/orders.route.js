@@ -4,8 +4,8 @@ import isAdmin from "../middleware/isAdmin.middleware.js";
 import orderController from "../controllers/orders.controller.js";
 import { validateBody } from "../middleware/validator.middleware.js";
 import {
-    orderUpdateSchema,
     orderCreationSchema,
+    orderUpdateSchema,
 } from "../schemas/order.schema.js";
 
 const router = Router();

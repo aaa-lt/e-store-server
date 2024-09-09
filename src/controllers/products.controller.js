@@ -1,7 +1,7 @@
 import {
+    addProduct,
     getAllProducts,
     getProductById,
-    addProduct,
     updateProductById,
 } from "../services/products.service.js";
 import { getSupplierById } from "../services/suppliers.service.js";
@@ -21,7 +21,6 @@ const getProduct = async (req, res) => {
     try {
         return res.status(200).send(await getProductById(req.params.id));
     } catch (error) {
-        console.log(error);
         res.status(404).json({
             status: "error",
             error: "Not found",
@@ -66,7 +65,6 @@ const updateProduct = async (req, res) => {
             message: "Product updated successfully",
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: "error",
             error: "Putting failed",

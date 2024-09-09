@@ -52,7 +52,6 @@ export const createOrderService = async (userId, products) => {
         await transaction.commit();
         return order.dataValues;
     } catch (error) {
-        console.log(error);
         await transaction.rollback();
         return undefined;
     }

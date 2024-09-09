@@ -1,11 +1,9 @@
 import {
+    createOrderService,
     getAllOrders,
     getOrderById,
-    createOrderService,
 } from "../services/orders.service.js";
 import { getProductById } from "../services/products.service.js";
-getProductById;
-import Product from "../models/Product.js";
 
 const getOrdersController = async (req, res) => {
     try {
@@ -58,7 +56,6 @@ const createOrderController = async (req, res) => {
             data: order,
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: "error",
             error: "Creation failed",

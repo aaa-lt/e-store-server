@@ -1,10 +1,10 @@
 import "dotenv/config";
 import authUtility from "../utils/jwt.utility.js";
 import {
-    userRegisterService,
-    userLoginService,
     getUserByEmail,
     getUserByUsername,
+    userLoginService,
+    userRegisterService,
 } from "../services/user.service.js";
 
 const userRegisterController = async (req, res) => {
@@ -32,7 +32,6 @@ const userRegisterController = async (req, res) => {
                 refreshToken: refreshToken,
             });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             status: "error",
             error: "Registration failed",

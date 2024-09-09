@@ -21,11 +21,4 @@ const Supplier = sequelize.define(
     { timestamps: false, indexes: [{ unique: false, fields: ["name"] }] }
 );
 
-Supplier.beforeDestroy(async (supplier, options) => {
-    await Product.destroy({
-        where: { supplier_id: supplier.id },
-        transaction: options.transaction,
-    });
-});
-
 export default Supplier;

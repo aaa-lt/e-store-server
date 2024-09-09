@@ -30,7 +30,6 @@ export const validateBody = (schema) => {
 export const validateQuery = (schema) => {
     return (req, res, next) => {
         try {
-            console.log(req.query);
             schema.parse(req.query);
             next();
         } catch (error) {
