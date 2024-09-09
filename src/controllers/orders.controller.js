@@ -3,6 +3,9 @@ import {
     getOrderById,
     createOrderService,
 } from "../services/orders.service.js";
+import { getProductById } from "../services/products.service.js";
+getProductById;
+import Product from "../models/Product.js";
 
 const getOrdersController = async (req, res) => {
     try {
@@ -32,9 +35,19 @@ const getOrder = async (req, res) => {
 
 const createOrderController = async (req, res) => {
     try {
+        for (const element of req.body.products) {
+            const product = await getProductById(element.ProductId);
+            if (element.quantity > product.quantity) {
+                return res.status(400).json({
+                    status: "error",
+                    message: "Not enough products available",
+                });
+            }
+        }
+
         const order = await createOrderService(req.userId, req.body.products);
         if (!order) {
-            res.status(400).json({
+            return res.status(400).json({
                 status: "error",
                 message: "Invalid products provided",
             });

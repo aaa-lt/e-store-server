@@ -16,4 +16,14 @@ const Category = sequelize.define(
     { timestamps: false }
 );
 
+Category.beforeDestroy(async (category, options) => {
+    await Product.update(
+        { category_id: null },
+        {
+            where: { category_id: category.id },
+            transaction: options.transaction,
+        }
+    );
+});
+
 export default Category;

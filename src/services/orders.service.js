@@ -41,11 +41,18 @@ export const createOrderService = async (userId, products) => {
                     quantity: element.quantity,
                 },
                 { transaction }
-            );
+            ).then(() => {
+                Product.decrement(
+                    { quantity: element.quantity },
+                    { where: { id: element.ProductId } },
+                    { transaction }
+                );
+            });
         }
         await transaction.commit();
         return order.dataValues;
     } catch (error) {
+        console.log(error);
         await transaction.rollback();
         return undefined;
     }
