@@ -18,7 +18,7 @@ const Supplier = sequelize.define(
             unique: true,
         },
     },
-    { timestamps: false }
+    { timestamps: false, indexes: [{ unique: false, fields: ["name"] }] }
 );
 
 export default Supplier;

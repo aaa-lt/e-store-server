@@ -1,13 +1,8 @@
-import OrderProduct from "../models/OrderProduct.js";
-import Order from "../models/Order.js";
-import Product from "../models/Product.js";
-import sequelize from "../../config/db.js";
 import {
     getAllOrders,
     getOrderById,
     createOrderService,
 } from "../services/orders.service.js";
-import { or } from "sequelize";
 
 const getOrdersController = async (req, res) => {
     try {

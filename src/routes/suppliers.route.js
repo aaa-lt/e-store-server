@@ -2,7 +2,7 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import supplierController from "../controllers/suppliers.controller.js";
-import { validateData } from "../middleware/validator.middleware.js";
+import { validateBody } from "../middleware/validator.middleware.js";
 import { supplierCreationSchema } from "../schemas/supplier.schema.js";
 
 const router = Router();
@@ -65,7 +65,7 @@ router.post(
     "/",
     verifyToken,
     isAdmin,
-    validateData(supplierCreationSchema),
+    validateBody(supplierCreationSchema),
     supplierController.createSupplier
 );
 

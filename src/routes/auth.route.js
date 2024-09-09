@@ -1,7 +1,7 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
 import verifyToken from "../middleware/verifyToken.middleware.js";
-import { validateData } from "../middleware/validator.middleware.js";
+import { validateBody } from "../middleware/validator.middleware.js";
 import {
     userLoginSchema,
     userRegistrationSchema,
@@ -47,7 +47,7 @@ const router = Router();
 
 router.post(
     "/register",
-    validateData(userRegistrationSchema),
+    validateBody(userRegistrationSchema),
     authController.userRegisterController
 );
 
@@ -85,7 +85,7 @@ router.post(
 
 router.post(
     "/login",
-    validateData(userLoginSchema),
+    validateBody(userLoginSchema),
     authController.userLoginController
 );
 

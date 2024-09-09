@@ -1,5 +1,5 @@
 import "dotenv/config";
-import authUtility from "../utils/auth.utility.js";
+import authUtility from "../utils/jwt.utility.js";
 import {
     userRegisterService,
     userLoginService,

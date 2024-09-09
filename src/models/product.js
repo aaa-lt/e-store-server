@@ -25,7 +25,6 @@ const Product = sequelize.define(
         },
         category_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
         supplier_id: {
             type: DataTypes.INTEGER,
@@ -36,6 +35,12 @@ const Product = sequelize.define(
         timestamps: true,
         updatedAt: false,
         createdAt: "creation_date",
+        indexes: [
+            {
+                unique: false,
+                fields: ["name", "price"],
+            },
+        ],
     }
 );
 

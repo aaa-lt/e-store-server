@@ -2,7 +2,7 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import orderController from "../controllers/orders.controller.js";
-import { validateData } from "../middleware/validator.middleware.js";
+import { validateBody } from "../middleware/validator.middleware.js";
 import {
     orderUpdateSchema,
     orderCreationSchema,
@@ -88,7 +88,7 @@ router.get("/:id", verifyToken, orderController.getOrder);
 router.post(
     "/",
     verifyToken,
-    validateData(orderCreationSchema),
+    validateBody(orderCreationSchema),
     orderController.createOrderController
 );
 
@@ -133,7 +133,7 @@ router.put(
     "/:id",
     verifyToken,
     isAdmin,
-    validateData(orderUpdateSchema),
+    validateBody(orderUpdateSchema),
     orderController.putOrder
 );
 

@@ -2,7 +2,7 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import productController from "../controllers/products.controller.js";
-import { validateData } from "../middleware/validator.middleware.js";
+import { validateBody } from "../middleware/validator.middleware.js";
 import {
     productCreationSchema,
     productUpdateSchema,
@@ -107,7 +107,7 @@ router.post(
     "/",
     verifyToken,
     isAdmin,
-    validateData(productCreationSchema),
+    validateBody(productCreationSchema),
     productController.createProduct
 );
 
@@ -167,7 +167,7 @@ router.put(
     "/:id",
     verifyToken,
     isAdmin,
-    validateData(productUpdateSchema),
+    validateBody(productUpdateSchema),
     productController.updateProduct
 );
 

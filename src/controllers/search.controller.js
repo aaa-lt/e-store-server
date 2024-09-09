@@ -3,8 +3,6 @@ import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import Supplier from "../models/Supplier.js";
 
-// TODO search date
-
 const searchProducts = async (req, res) => {
     try {
         const {
@@ -16,7 +14,10 @@ const searchProducts = async (req, res) => {
             supplierName,
         } = req.query;
 
-        const today = new Date(creationDate).setHours(0, 0, 0, 0);
+        const date = new Date(creationDate);
+        date.setHours(0, 0, 0, 0);
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
 
         const products = await Product.findAll({
             where: {
@@ -24,7 +25,7 @@ const searchProducts = async (req, res) => {
                 ...(creationDate && {
                     creation_date: {
                         [Op.gte]: new Date(creationDate).setHours(0, 0, 0, 0),
-                        [Op.lt]: today.getDate() + 1,
+                        [Op.lt]: date.setDate(date.getDate() + 1),
                     },
                 }),
                 ...(minPrice &&
@@ -54,6 +55,8 @@ const searchProducts = async (req, res) => {
                     }),
                 },
             ],
+            limit: pageSize,
+            offset: (page - 1) * pageSize,
         });
 
         res.status(200).send(products);

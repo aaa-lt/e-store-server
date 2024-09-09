@@ -2,7 +2,7 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import categoryController from "../controllers/categories.controller.js";
-import { validateData } from "../middleware/validator.middleware.js";
+import { validateBody } from "../middleware/validator.middleware.js";
 import { categoryCreationSchema } from "../schemas/category.schema.js";
 
 const router = Router();
@@ -60,7 +60,7 @@ router.post(
     "/",
     verifyToken,
     isAdmin,
-    validateData(categoryCreationSchema),
+    validateBody(categoryCreationSchema),
     categoryController.createCategory
 );
 

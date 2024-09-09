@@ -1,5 +1,7 @@
 import { Router } from "express";
 import searchController from "../controllers/search.controller.js";
+import { validateQuery } from "../middleware/validator.middleware.js";
+import { searchQuerySchema } from "../schemas/search.schema.js";
 
 const router = Router();
 
@@ -37,6 +39,16 @@ const router = Router();
  *         name: supplierName
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
  *
  *     responses:
  *      200:
@@ -45,6 +57,6 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/", searchController);
+router.get("/", validateQuery(searchQuerySchema), searchController);
 
 export default router;
