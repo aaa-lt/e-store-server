@@ -1,9 +1,14 @@
 import Product from "../models/Product.js";
 
-export const getAllProducts = async (filter) => {
-    const order = filter ? [[filter + "_id"]] : undefined;
+export const getAllProducts = async (reqQuery) => {
+    const order = reqQuery.filter ? [[reqQuery.filter + "_id"]] : undefined;
+    const page = parseInt(reqQuery.page);
+    const pageSize = parseInt(reqQuery.pageSize);
+
     return await Product.findAll({
         order,
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
     });
 };
 

@@ -2,11 +2,15 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import orderController from "../controllers/orders.controller.js";
-import { validateBody } from "../middleware/validator.middleware.js";
+import {
+    validateBody,
+    validateQuery,
+} from "../middleware/validator.middleware.js";
 import {
     orderCreationSchema,
     orderUpdateSchema,
 } from "../schemas/order.schema.js";
+import { getAllSchema } from "../schemas/search.schema.js";
 
 const router = Router();
 
@@ -17,6 +21,17 @@ const router = Router();
  *     tags:
  *     - Order Controller
  *     summary: Get orders
+ *     parameters:
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
  *     security:
  *     - Authorization: []
  *     responses:
@@ -26,7 +41,13 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/", verifyToken, isAdmin, orderController.getOrdersController);
+router.get(
+    "/",
+    verifyToken,
+    isAdmin,
+    validateQuery(getAllSchema),
+    orderController.getOrdersController
+);
 
 /**
  * @openapi

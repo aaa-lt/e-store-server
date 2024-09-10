@@ -8,7 +8,7 @@ import {
 
 const getSuppliers = async (req, res) => {
     try {
-        return res.status(200).send(await getAllSuppliers());
+        return res.status(200).send(await getAllSuppliers(req.query));
     } catch (error) {
         return res.status(500).json({
             status: "error",

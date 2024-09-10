@@ -9,7 +9,7 @@ import { getCategoryById } from "../services/categories.service.js";
 
 const getProducts = async (req, res) => {
     try {
-        res.status(200).send(await getAllProducts(req.query.filter));
+        res.status(200).send(await getAllProducts(req.query));
     } catch (error) {
         res.status(500).json({
             status: "error",

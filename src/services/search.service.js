@@ -6,8 +6,8 @@ import Supplier from "../models/Supplier.js";
 export const searchProductsService = async (reqQuery) => {
     const date = new Date(reqQuery.creationDate);
     date.setHours(0, 0, 0, 0);
-    const page = parseInt(reqQuery.page) || 1;
-    const pageSize = parseInt(reqQuery.pageSize) || 10;
+    const page = parseInt(reqQuery.page);
+    const pageSize = parseInt(reqQuery.pageSize);
 
     return await Product.findAll({
         where: {

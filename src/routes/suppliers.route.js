@@ -2,8 +2,12 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import supplierController from "../controllers/suppliers.controller.js";
-import { validateBody } from "../middleware/validator.middleware.js";
+import {
+    validateBody,
+    validateQuery,
+} from "../middleware/validator.middleware.js";
 import { supplierCreationSchema } from "../schemas/supplier.schema.js";
+import { getAllSchema } from "../schemas/search.schema.js";
 
 const router = Router();
 
@@ -14,6 +18,17 @@ const router = Router();
  *     tags:
  *     - Supplier Controller
  *     summary: Get product suppliers
+ *     parameters:
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -21,7 +36,7 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/", supplierController.getSuppliers);
+router.get("/", validateQuery(getAllSchema), supplierController.getSuppliers);
 
 /**
  * @openapi

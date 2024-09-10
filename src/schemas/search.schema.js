@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const stringToIntPreprocessor = (val) => {
+export const stringToIntPreprocessor = (val) => {
     if (typeof val === "string") {
         return parseFloat(val);
     }
@@ -20,4 +20,11 @@ export const searchQuerySchema = z.object({
     ),
     categoryName: z.string().min(2).optional(),
     supplierName: z.string().min(2).optional(),
+    pageSize: z.preprocess(stringToIntPreprocessor, z.number().positive()),
+    page: z.preprocess(stringToIntPreprocessor, z.number().positive()),
+});
+
+export const getAllSchema = z.object({
+    pageSize: z.preprocess(stringToIntPreprocessor, z.number().positive()),
+    page: z.preprocess(stringToIntPreprocessor, z.number().positive()),
 });

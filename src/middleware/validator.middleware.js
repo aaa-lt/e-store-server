@@ -10,6 +10,7 @@ const handleValidatingError = (error, res) => {
             details: errorMessages,
         });
     } else {
+        console.log(error);
         res.status(500).json({
             error: "Zod Internal Server Error",
         });

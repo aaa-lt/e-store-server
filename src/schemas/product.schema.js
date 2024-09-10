@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { stringToIntPreprocessor } from "./search.schema.js";
 
 export const productCreationSchema = z.object({
     name: z.string().min(2),
@@ -16,4 +17,10 @@ export const productUpdateSchema = z.object({
     price: z.number().nonnegative().finite().optional(),
     category_id: z.number().int().positive().optional(),
     supplier_id: z.number().int().positive().optional(),
+});
+
+export const getAllProductsSchema = z.object({
+    filter: z.enum(["category", "supplier"]).optional(),
+    pageSize: z.preprocess(stringToIntPreprocessor, z.number().positive()),
+    page: z.preprocess(stringToIntPreprocessor, z.number().positive()),
 });

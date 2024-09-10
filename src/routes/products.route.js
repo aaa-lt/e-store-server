@@ -2,8 +2,12 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
 import productController from "../controllers/products.controller.js";
-import { validateBody } from "../middleware/validator.middleware.js";
 import {
+    validateBody,
+    validateQuery,
+} from "../middleware/validator.middleware.js";
+import {
+    getAllProductsSchema,
     productCreationSchema,
     productUpdateSchema,
 } from "../schemas/product.schema.js";
@@ -25,6 +29,16 @@ const router = Router();
  *           enum:
  *             - category
  *             - supplier
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -32,7 +46,11 @@ const router = Router();
  *        description: Server Error
  */
 
-router.get("/", productController.getProducts);
+router.get(
+    "/",
+    validateQuery(getAllProductsSchema),
+    productController.getProducts
+);
 
 /**
  * @openapi

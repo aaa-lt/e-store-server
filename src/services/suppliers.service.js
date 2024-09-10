@@ -28,8 +28,14 @@ export const getSupplierByPhone = async (phone) => {
     });
 };
 
-export const getAllSuppliers = async () => {
-    return await Supplier.findAll();
+export const getAllSuppliers = async (reqQuery) => {
+    const page = parseInt(reqQuery.page);
+    const pageSize = parseInt(reqQuery.pageSize);
+
+    return await Supplier.findAll({
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+    });
 };
 
 export const addSupplier = async (reqBody) => {

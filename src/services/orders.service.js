@@ -3,8 +3,14 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import sequelize from "../../config/db.js";
 
-export const getAllOrders = async () => {
-    return await Order.findAll();
+export const getAllOrders = async (reqQuery) => {
+    const page = parseInt(reqQuery.page);
+    const pageSize = parseInt(reqQuery.pageSize);
+
+    return await Order.findAll({
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+    });
 };
 
 export const getOrderById = async (id) => {

@@ -7,7 +7,7 @@ import { getProductById } from "../services/products.service.js";
 
 const getOrdersController = async (req, res) => {
     try {
-        res.status(200).send(await getAllOrders());
+        res.status(200).send(await getAllOrders(req.query));
     } catch (error) {
         res.status(500).json({
             status: "error",
