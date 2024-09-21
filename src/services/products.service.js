@@ -15,11 +15,14 @@ export const getAllProducts = async (reqQuery) => {
         ];
     }
 
+    const date = new Date(reqQuery.creationDate);
+    date.setHours(0, 0, 0, 0);
+
     const filterConditions = {
         ...(reqQuery.name && { name: { [Op.like]: `%${reqQuery.name}%` } }),
         ...(reqQuery.creationDate && {
             creation_date: {
-                [Op.gte]: new Date(reqQuery.creationDate).setHours(0, 0, 0, 0),
+                [Op.gte]: date,
                 [Op.lt]: new Date(reqQuery.creationDate).setDate(
                     date.getDate() + 1
                 ),
@@ -77,7 +80,6 @@ export const getAllProducts = async (reqQuery) => {
                 include: includeArray[1],
             }),
         distinct: true,
-        logging: console.log,
     });
 
     const meta = metaCalc(count, reqQuery.page, reqQuery.limit);
@@ -91,6 +93,8 @@ export const getAllProducts = async (reqQuery) => {
         offset: (meta.current_page - 1) * meta.per_page,
         logging: console.log,
     });
+
+    console.log(meta);
 
     return {
         meta: meta,
