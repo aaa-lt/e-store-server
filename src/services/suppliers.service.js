@@ -1,4 +1,5 @@
 import Supplier from "../models/Supplier.js";
+import { Op } from "sequelize";
 
 export const getSupplierById = async (id) => {
     return await Supplier.findByPk(id);
@@ -43,5 +44,35 @@ export const addSupplier = async (reqBody) => {
         name: reqBody.name,
         contact_email: reqBody.contact_email,
         phone_number: reqBody.phone_number,
+    });
+};
+
+export const updateSupplierById = async (id, reqBody) => {
+    const updates = {};
+
+    for (const key in reqBody) {
+        if (Object.prototype.hasOwnProperty.call(reqBody, key)) {
+            if (reqBody[key] !== undefined) {
+                updates[key] = reqBody[key];
+            }
+        }
+    }
+
+    const supplier = await Supplier.findByPk(id);
+    await supplier.update(updates);
+};
+
+export const uniqueSupplierCheck = async (reqBody) => {
+    return await Supplier.findAll({
+        where: {
+            [Op.or]: [
+                ...(reqBody.contact_email
+                    ? [{ contact_email: reqBody.contact_email }]
+                    : []),
+                ...(reqBody.phone_number
+                    ? [{ phone_number: reqBody.phone_number }]
+                    : []),
+            ],
+        },
     });
 };

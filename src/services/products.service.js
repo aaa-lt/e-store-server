@@ -14,8 +14,6 @@ export const getAllProducts = async (reqQuery) => {
             ],
         ];
     }
-    // const date = new Date(reqQuery.creationDate);
-    // date.setHours(0, 0, 0, 0);
 
     const filterConditions = {
         ...(reqQuery.name && { name: { [Op.like]: `%${reqQuery.name}%` } }),
@@ -133,5 +131,5 @@ export const updateProductById = async (id, reqBody) => {
 };
 
 export const deleteProductById = async (id) => {
-    await Product.destroy({ where: { id: id } });
+    return await Product.destroy({ where: { id: id } });
 };

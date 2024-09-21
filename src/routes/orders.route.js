@@ -116,7 +116,7 @@ router.post(
 /**
  * @openapi
  * '/orders/{id}':
- *  put:
+ *  patch:
  *     tags:
  *     - Order Controller
  *     summary: Change status of an order
@@ -150,7 +150,7 @@ router.post(
  *        description: Server Error
  */
 
-router.put(
+router.patch(
     "/:id",
     verifyToken,
     isAdmin,

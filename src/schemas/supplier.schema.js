@@ -9,3 +9,9 @@ export const supplierCreationSchema = z.object({
     phone_number: z.string().regex(phoneRegex),
     contact_email: z.string().email(),
 });
+
+export const supplierUpdateSchema = z.object({
+    name: z.string().min(2).optional(),
+    phone_number: z.string().regex(phoneRegex).optional(),
+    contact_email: z.string().email().optional(),
+});

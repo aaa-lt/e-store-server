@@ -74,12 +74,17 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     try {
-        await deleteProductById(req.params.id);
-        return res.status(200).send("Deleted");
-    } catch (error) {
+        if (await deleteProductById(req.params.id)) {
+            return res.status(200).send("Deleted");
+        }
         res.status(404).json({
             status: "error",
             error: "Not found",
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            error: "Deleting failed",
         });
     }
 };
