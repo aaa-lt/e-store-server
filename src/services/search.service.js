@@ -7,7 +7,7 @@ export const searchProductsService = async (reqQuery) => {
     const date = new Date(reqQuery.creationDate);
     date.setHours(0, 0, 0, 0);
     const page = parseInt(reqQuery.page);
-    const pageSize = parseInt(reqQuery.pageSize);
+    const limit = parseInt(reqQuery.limit);
 
     return await Product.findAll({
         where: {
@@ -56,7 +56,7 @@ export const searchProductsService = async (reqQuery) => {
                 }),
             },
         ],
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
+        limit: limit,
+        offset: (page - 1) * limit,
     });
 };

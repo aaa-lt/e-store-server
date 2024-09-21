@@ -29,12 +29,12 @@ export const getSupplierByPhone = async (phone) => {
 };
 
 export const getAllSuppliers = async (reqQuery) => {
-    const page = parseInt(reqQuery.page);
-    const pageSize = parseInt(reqQuery.pageSize);
+    const page = parseInt(reqQuery.page | 1);
+    const limit = parseInt(reqQuery.limit | 10);
 
     return await Supplier.findAll({
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
+        limit: limit,
+        offset: (page - 1) * limit,
     });
 };
 

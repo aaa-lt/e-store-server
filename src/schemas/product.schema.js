@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { stringToIntPreprocessor } from "./search.schema.js";
+import { stringToIntPreprocessor } from "./pagination.schema.js";
 
 export const productCreationSchema = z.object({
     name: z.string().min(2),
@@ -20,7 +20,28 @@ export const productUpdateSchema = z.object({
 });
 
 export const getAllProductsSchema = z.object({
-    filter: z.enum(["category", "supplier"]).optional(),
-    pageSize: z.preprocess(stringToIntPreprocessor, z.number().positive()),
-    page: z.preprocess(stringToIntPreprocessor, z.number().positive()),
+    sortBy: z
+        .string()
+        .regex(/^(-?)(category_id|supplier_id|price|creation_date)$/)
+        .optional(),
+    name: z.string().min(2).optional(),
+    creationDate: z.string().date().optional(),
+    minPrice: z.preprocess(
+        stringToIntPreprocessor,
+        z.number().nonnegative().optional()
+    ),
+    maxPrice: z.preprocess(
+        stringToIntPreprocessor,
+        z.number().nonnegative().optional()
+    ),
+    categoryName: z.string().min(2).optional(),
+    supplierName: z.string().min(2).optional(),
+    limit: z.preprocess(
+        stringToIntPreprocessor,
+        z.number().positive().optional()
+    ),
+    page: z.preprocess(
+        stringToIntPreprocessor,
+        z.number().positive().optional()
+    ),
 });

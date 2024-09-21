@@ -1,7 +1,7 @@
 import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
-import productController from "../controllers/products.controller.js";
+import * as productController from "../controllers/products.controller.js";
 import {
     validateBody,
     validateQuery,
@@ -23,14 +23,46 @@ const router = Router();
  *     summary: Get products
  *     parameters:
  *       - in: query
- *         name: filter
+ *         name: sortBy
  *         schema:
  *           type: string
  *           enum:
- *             - category
- *             - supplier
+ *             - category_id
+ *             - -category_id
+ *             - supplier_id
+ *             - -supplier_id
+ *             - price
+ *             - -price
+ *             - creation_date
+ *             - -creation_date
  *       - in: query
- *         name: pageSize
+ *         name: name
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: creationDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-08-17
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: categoryName
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: supplierName
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
@@ -132,7 +164,7 @@ router.post(
 /**
  * @openapi
  * '/products/{id}':
- *  put:
+ *  patch:
  *     tags:
  *     - Product Controller
  *     summary: Update the product
@@ -181,12 +213,41 @@ router.post(
  *        description: Server Error
  */
 
-router.put(
+router.patch(
     "/:id",
     verifyToken,
     isAdmin,
     validateBody(productUpdateSchema),
     productController.updateProduct
 );
+
+/**
+ * @openapi
+ * '/products/{id}':
+ *  delete:
+ *     tags:
+ *     - Product Controller
+ *     summary: Delete the product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the product to update
+ *     security:
+ *       - Authorization: []
+ *
+ *
+ *     responses:
+ *      200:
+ *        description: Deleted
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Server Error
+ */
+
+router.delete("/:id", verifyToken, isAdmin, productController.deleteProduct);
 
 export default router;

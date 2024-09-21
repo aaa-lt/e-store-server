@@ -10,7 +10,7 @@ import {
     orderCreationSchema,
     orderUpdateSchema,
 } from "../schemas/order.schema.js";
-import { getAllSchema } from "../schemas/search.schema.js";
+import { getAllSchema } from "../schemas/pagination.schema.js";
 
 const router = Router();
 
@@ -23,7 +23,7 @@ const router = Router();
  *     summary: Get orders
  *     parameters:
  *       - in: query
- *         name: pageSize
+ *         name: limit
  *         schema:
  *           type: integer
  *           default: 10

@@ -3,21 +3,23 @@ import {
     getAllProducts,
     getProductById,
     updateProductById,
+    deleteProductById,
 } from "../services/products.service.js";
 import { getSupplierById } from "../services/suppliers.service.js";
 import { getCategoryById } from "../services/categories.service.js";
 
-const getProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
     try {
         res.status(200).send(await getAllProducts(req.query));
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             status: "error",
             error: "Failed to get information",
         });
     }
 };
-const getProduct = async (req, res) => {
+export const getProduct = async (req, res) => {
     try {
         return res.status(200).send(await getProductById(req.params.id));
     } catch (error) {
@@ -27,7 +29,7 @@ const getProduct = async (req, res) => {
         });
     }
 };
-const createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
     try {
         if (!(await getSupplierById(req.body.supplier_id))) {
             return res.status(400).send("Invalid supplier_id");
@@ -49,13 +51,11 @@ const createProduct = async (req, res) => {
     }
 };
 
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
     try {
         if (
             Object.keys(req.body).length === 0 ||
-            !(await getProductById(req.params.id)) ||
-            !(await getSupplierById(req.body.supplier_id)) ||
-            !(await getCategoryById(req.body.category_id))
+            !(await getProductById(req.params.id))
         ) {
             return res.status(400).send("Invalid data provided");
         }
@@ -72,4 +72,14 @@ const updateProduct = async (req, res) => {
     }
 };
 
-export default { getProducts, getProduct, createProduct, updateProduct };
+export const deleteProduct = async (req, res) => {
+    try {
+        await deleteProductById(req.params.id);
+        return res.status(200).send("Deleted");
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            error: "Not found",
+        });
+    }
+};

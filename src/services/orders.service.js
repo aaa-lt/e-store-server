@@ -4,12 +4,12 @@ import Product from "../models/Product.js";
 import sequelize from "../../config/db.js";
 
 export const getAllOrders = async (reqQuery) => {
-    const page = parseInt(reqQuery.page);
-    const pageSize = parseInt(reqQuery.pageSize);
+    const page = parseInt(reqQuery.page | 1);
+    const limit = parseInt(reqQuery.limit | 10);
 
     return await Order.findAll({
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
+        limit: limit,
+        offset: (page - 1) * limit,
     });
 };
 

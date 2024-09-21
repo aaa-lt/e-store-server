@@ -7,7 +7,7 @@ import {
     validateQuery,
 } from "../middleware/validator.middleware.js";
 import { supplierCreationSchema } from "../schemas/supplier.schema.js";
-import { getAllSchema } from "../schemas/search.schema.js";
+import { getAllSchema } from "../schemas/pagination.schema.js";
 
 const router = Router();
 
@@ -20,7 +20,7 @@ const router = Router();
  *     summary: Get product suppliers
  *     parameters:
  *       - in: query
- *         name: pageSize
+ *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
