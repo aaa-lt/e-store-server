@@ -5,6 +5,7 @@ import swaggerUI from "swagger-ui-express";
 import swaggerSpec from "../config/swagger.js";
 import routes from "./routes/index.js";
 import errorCatcher from "./utils/catcher.utility.js";
+import cors from "cors";
 
 const app = express();
 
@@ -23,6 +24,7 @@ const port = 3000;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 app.use(errorCatcher);
 app.use(
     "/api-docs",

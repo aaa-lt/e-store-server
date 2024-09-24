@@ -30,8 +30,8 @@ export const getSupplierByPhone = async (phone) => {
 };
 
 export const getAllSuppliers = async (reqQuery) => {
-    const page = parseInt(reqQuery.page | 1);
-    const limit = parseInt(reqQuery.limit | 10);
+    const page = parseInt(reqQuery.page ?? 1);
+    const limit = parseInt(reqQuery.limit ?? 10);
 
     return await Supplier.findAll({
         limit: limit,

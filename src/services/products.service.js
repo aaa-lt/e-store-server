@@ -81,7 +81,6 @@ export const getAllProducts = async (reqQuery) => {
             }),
         distinct: true,
     });
-
     const meta = metaCalc(count, reqQuery.page, reqQuery.limit);
 
     const products = await Product.findAll({
