@@ -5,6 +5,7 @@ import {
     getUserByUsername,
     userLoginService,
     userRegisterService,
+    tokenRefreshService,
 } from "../services/user.service.js";
 
 const userRegisterController = async (req, res) => {
@@ -67,7 +68,7 @@ const userLoginController = async (req, res) => {
     }
 };
 
-const userLogoutController = async (req, res) => {
+const resfreshAccessTokenController = async (req, res) => {
     if (!req.cookies["refreshToken"]) {
         return res
             .status(401)
@@ -75,23 +76,25 @@ const userLogoutController = async (req, res) => {
     }
 
     try {
+        const accessToken = tokenRefreshService(req.body);
+        if (!accessToken) {
+            return res
+                .status(401)
+                .json({ status: "error", message: "Invalid Token" });
+        }
         return res
-            .status(204)
-            .cookie("refreshToken", "", {
-                httpOnly: true,
-                sameSite: "strict",
-            })
-            .header("Authorization", "")
-            .send();
+            .status(200)
+            .json({ status: "success", accessToken: accessToken });
     } catch (error) {
+        console.log(error);
         return res
             .status(500)
-            .json({ status: "error", error: "Logout failed" });
+            .json({ status: "error", error: "Refresh failed" });
     }
 };
 
 export default {
     userRegisterController,
     userLoginController,
-    userLogoutController,
+    resfreshAccessTokenController,
 };

@@ -90,10 +90,7 @@ export const getAllProducts = async (reqQuery) => {
         order: order.length > 0 ? order : undefined,
         limit: meta.per_page,
         offset: (meta.current_page - 1) * meta.per_page,
-        logging: console.log,
     });
-
-    console.log(meta);
 
     return {
         meta: meta,

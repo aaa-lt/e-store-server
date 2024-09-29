@@ -91,22 +91,32 @@ router.post(
 
 /**
  * @openapi
- * '/auth/logout':
+ * '/auth/refresh':
  *  post:
  *     tags:
  *     - Auth Controller
- *     summary: Logout the user
- *     security:
- *       - Authorization: []
+ *     summary: Refresh access token
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - refreshToken
+ *            properties:
+ *              refreshToken:
+ *                type: string
+ *                default: "Bearer "
  *     responses:
- *      204:
- *        description: Logged out
+ *      200:
+ *        description: Refreshed
  *      401:
  *        description: No token provided
  *      500:
  *        description: Server Error
  */
 
-router.post("/logout", verifyToken, authController.userLogoutController);
+router.post("/refresh", authController.resfreshAccessTokenController);
 
 export default router;

@@ -1,8 +1,6 @@
 export const metaCalc = (totalItems, page, limit) => {
     page = parseInt(page ?? 1);
-    console.log(limit);
     limit = parseInt(limit ?? 10);
-    console.log(limit);
     return {
         total_items: totalItems,
         total_pages: Math.ceil(totalItems / limit),

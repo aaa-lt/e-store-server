@@ -54,12 +54,16 @@ export const userLoginService = async (reqBody) => {
     }
 };
 
-export const tokenRefreshService = (reqCookies) => {
-    const refreshToken = reqCookies["refreshToken"];
+export const tokenRefreshService = (reqBody) => {
+    const refreshToken = reqBody["refreshToken"].split(" ")[1];
     if (!refreshToken) {
         return undefined;
     }
-    return authUtility.createAccessToken(
-        jwt.verify(refreshToken, process.env.SECRETKEY).userId
-    );
+    try {
+        return authUtility.createAccessToken(
+            jwt.verify(refreshToken, process.env.SECRETKEY).userId
+        );
+    } catch (error) {
+        return undefined;
+    }
 };
