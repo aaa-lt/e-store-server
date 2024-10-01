@@ -21,14 +21,14 @@ The MySQL database should include at least five tables, with the following sugge
 
 1. **Users** (for storing user details)
    - `id` (Primary Key)
-   - `username`
+   - `username` (unique)
    - `password_hash`
-   - `email`
+   - `email` (unique)
    - `is_admin` (Boolean to denote admin users)
 
 2. **Products**
    - `id` (Primary Key)
-   - `name`
+   - `name` (unique)
    - `description`
    - `price`
    - `creation_date` (Timestamp): Automatically set when a new product is added.
@@ -37,14 +37,14 @@ The MySQL database should include at least five tables, with the following sugge
 
 3. **Categories**
    - `id` (Primary Key)
-   - `name`
+   - `name` (unique)
    - `description`
 
 4. **Suppliers**
    - `id` (Primary Key)
-   - `name`
-   - `contact_email`
-   - `phone_number`
+   - `name` (unique)
+   - `contact_email` (unique)
+   - `phone_number` (unique)
 
 5. **Orders**
    - `id` (Primary Key)
