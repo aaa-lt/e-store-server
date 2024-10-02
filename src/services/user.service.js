@@ -41,16 +41,12 @@ export const userRegisterService = async (reqBody) => {
 };
 
 export const userLoginService = async (reqBody) => {
-    try {
-        const user = await getUserPasswordByUsername(reqBody.username);
-        if (await passwordCompare(reqBody.password, user.password)) {
-            return user.id;
-        }
-    } catch (error) {
-        if (error.message === "User not found") {
-            return false;
-        }
-        throw error;
+    const user = await getUserPasswordByUsername(reqBody.username);
+    if (!user) {
+        return false;
+    }
+    if (await passwordCompare(reqBody.password, user.password)) {
+        return user.id;
     }
 };
 

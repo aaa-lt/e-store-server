@@ -44,7 +44,6 @@ const router = Router();
 router.get(
     "/",
     verifyToken,
-    isAdmin,
     validateQuery(getAllSchema),
     orderController.getOrdersController
 );

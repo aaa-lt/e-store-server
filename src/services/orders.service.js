@@ -3,13 +3,23 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import sequelize from "../../config/db.js";
 
-export const getAllOrders = async (reqQuery) => {
+export const getAllOrders = async (userId, reqQuery) => {
     const page = parseInt(reqQuery.page ?? 1);
     const limit = parseInt(reqQuery.limit ?? 10);
 
     return await Order.findAll({
+        where: { user_id: userId },
         limit: limit,
         offset: (page - 1) * limit,
+        include: [
+            {
+                model: Product,
+                attributes: ["id", "name"],
+                through: {
+                    attributes: ["quantity"],
+                },
+            },
+        ],
     });
 };
 

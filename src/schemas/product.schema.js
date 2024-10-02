@@ -24,7 +24,7 @@ export const getAllProductsSchema = z.object({
         .string()
         .regex(/^(-?)(category_id|supplier_id|price|creation_date)$/)
         .optional(),
-    name: z.string().min(2).optional(),
+    name: z.string().optional(),
     creationDate: z.string().date().optional(),
     minPrice: z.preprocess(
         stringToIntPreprocessor,

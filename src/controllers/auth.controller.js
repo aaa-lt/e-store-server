@@ -64,6 +64,7 @@ const userLoginController = async (req, res) => {
                 refreshToken: refreshToken,
             });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ status: "error", error: "Login failed" });
     }
 };
