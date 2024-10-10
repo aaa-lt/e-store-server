@@ -2,25 +2,40 @@ import OrderProduct from "../models/OrderProduct.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import sequelize from "../../config/db.js";
+import { metaCalc } from "../utils/pagination.utility.js";
 
 export const getAllOrders = async (userId, reqQuery) => {
-    const page = parseInt(reqQuery.page ?? 1);
-    const limit = parseInt(reqQuery.limit ?? 10);
+    const filterConditions = { user_id: userId };
 
-    return await Order.findAll({
-        where: { user_id: userId },
-        limit: limit,
-        offset: (page - 1) * limit,
-        include: [
-            {
-                model: Product,
-                attributes: ["id", "name"],
-                through: {
-                    attributes: ["quantity"],
-                },
+    const includeArray = [
+        {
+            model: Product,
+            attributes: ["id", "name", "price"],
+            through: {
+                attributes: ["quantity"],
             },
-        ],
+        },
+    ];
+
+    const count = await Order.count({
+        where: filterConditions,
+        include: includeArray,
+        distinct: true,
     });
+
+    const meta = metaCalc(count, reqQuery.page, reqQuery.limit);
+
+    const orders = await Order.findAll({
+        where: filterConditions,
+        limit: meta.per_page,
+        offset: (meta.current_page - 1) * meta.per_page,
+        include: includeArray,
+    });
+
+    return {
+        meta: meta,
+        items: orders,
+    };
 };
 
 export const getOrderById = async (id) => {
@@ -29,7 +44,7 @@ export const getOrderById = async (id) => {
         include: [
             {
                 model: Product,
-                attributes: ["id", "name"],
+                attributes: ["id", "name", "price", "image_url"],
                 through: {
                     attributes: ["quantity"],
                 },
@@ -57,13 +72,15 @@ export const createOrderService = async (userId, products) => {
                     quantity: element.quantity,
                 },
                 { transaction }
-            ).then(() => {
-                Product.decrement(
-                    { quantity: element.quantity },
-                    { where: { id: element.ProductId } },
-                    { transaction }
-                );
-            });
+            );
+
+            await Product.decrement(
+                { quantity: element.quantity },
+                {
+                    where: { id: element.ProductId },
+                    transaction,
+                }
+            );
         }
         await transaction.commit();
         return order.dataValues;

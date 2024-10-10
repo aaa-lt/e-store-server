@@ -86,7 +86,14 @@ export const getAllProducts = async (reqQuery) => {
     const products = await Product.findAll({
         where: filterConditions,
         include: includeArray,
-        attributes: ["id", "name", "description", "price", "quantity"],
+        attributes: [
+            "id",
+            "name",
+            "description",
+            "price",
+            "quantity",
+            "image_url",
+        ],
         order: order.length > 0 ? order : undefined,
         limit: meta.per_page,
         offset: (meta.current_page - 1) * meta.per_page,

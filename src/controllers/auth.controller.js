@@ -10,11 +10,19 @@ import {
 
 const userRegisterController = async (req, res) => {
     try {
-        if (
-            (await getUserByUsername(req.body.username)) ||
-            (await getUserByEmail(req.body.email))
-        ) {
-            return res.status(409).send("Duplicate found");
+        if (await getUserByUsername(req.body.username)) {
+            return res.status(409).json({
+                status: "error",
+                source: "username",
+                error: "User with this Username is already exists",
+            });
+        }
+        if (await getUserByEmail(req.body.email)) {
+            return res.status(409).json({
+                status: "error",
+                source: "email",
+                error: "User with this Email is already exists",
+            });
         }
         const id = await userRegisterService(req.body);
         const accessToken = authUtility.createRefreshToken(id);
