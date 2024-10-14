@@ -1,6 +1,6 @@
-import OrderProduct from "../models/OrderProduct.js";
-import Order from "../models/Order.js";
-import Product from "../models/Product.js";
+import OrderProduct from "../models/orderProduct.js";
+import Order from "../models/order.js";
+import Product from "../models/product.js";
 import sequelize from "../../config/db.js";
 import { metaCalc } from "../utils/pagination.utility.js";
 

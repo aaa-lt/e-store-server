@@ -1,5 +1,5 @@
 import { z } from "zod";
-import Order from "../models/Order.js";
+import Order from "../models/order.js";
 
 export const orderProductCreationSchema = z.object({
     ProductId: z.number().int().positive(),

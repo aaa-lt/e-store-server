@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
-import Product from "../models/Product.js";
-import Category from "../models/Category.js";
-import Supplier from "../models/Supplier.js";
+import Product from "../models/product.js";
+import Category from "../models/category.js";
+import Supplier from "../models/supplier.js";
 import { metaCalc } from "../utils/pagination.utility.js";
 
 export const getAllProducts = async (reqQuery) => {

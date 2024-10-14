@@ -1,4 +1,4 @@
-import Supplier from "../models/Supplier.js";
+import Supplier from "../models/supplier.js";
 import { Op } from "sequelize";
 
 export const getSupplierById = async (id) => {
