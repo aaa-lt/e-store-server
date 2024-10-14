@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../config/db.js";
-import Category from "./Category.js";
-import Supplier from "./Supplier.js";
+import Category from "./category.js";
+import Supplier from "./supplier.js";
 
 const Product = sequelize.define(
     "Product",

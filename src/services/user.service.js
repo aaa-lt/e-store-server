@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/user.js";
 import { passwordCompare, passwordHash } from "./bcrypt.service.js";
 import authUtility from "../utils/jwt.utility.js";
 import jwt from "jsonwebtoken";

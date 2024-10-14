@@ -3,12 +3,12 @@ import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage } from "canvas";
 import sequelize from "../config/db.js";
-import Category from "./models/Category.js";
-import Supplier from "./models/Supplier.js";
-import Product from "./models/Product.js";
-import OrderProduct from "./models/OrderProduct.js";
-import Order from "./models/Order.js";
-import User from "./models/User.js";
+import Category from "./models/category.js";
+import Supplier from "./models/supplier.js";
+import Product from "./models/product.js";
+import OrderProduct from "./models/orderProduct.js";
+import Order from "./models/order.js";
+import User from "./models/user.js";
 
 function cleanUpImagesDirectory(dirPath) {
     if (!fs.existsSync(dirPath)) {
