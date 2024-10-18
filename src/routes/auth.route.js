@@ -1,6 +1,5 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
-import verifyToken from "../middleware/verifyToken.middleware.js";
 import { validateBody } from "../middleware/validator.middleware.js";
 import {
     userLoginSchema,
@@ -118,5 +117,24 @@ router.post(
  */
 
 router.post("/refresh", authController.resfreshAccessTokenController);
+
+/**
+ * @openapi
+ * '/auth/oauth':
+ *  post:
+ *     tags:
+ *     - Auth Controller
+ *     summary: Google oauth
+ *     responses:
+ *      200:
+ *        description: Refreshed
+ *      401:
+ *        description: No token provided
+ *      500:
+ *        description: Server Error
+ */
+
+router.get("/oauth", authController.googleLoginController);
+router.post("/request", authController.googleRequestController);
 
 export default router;

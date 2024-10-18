@@ -7,6 +7,14 @@ import {
     userRegisterService,
     tokenRefreshService,
 } from "../services/user.service.js";
+import { OAuth2Client } from "google-auth-library";
+
+const redirectURL = "http://127.0.0.1:8000/oauth/callback";
+const client = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    redirectURL
+);
 
 const userRegisterController = async (req, res) => {
     try {
@@ -102,8 +110,40 @@ const resfreshAccessTokenController = async (req, res) => {
     }
 };
 
+const googleLoginController = async (req, res) => {
+    const code = req.query.code;
+
+    try {
+        const { tokens } = await client.getToken(code);
+        return res.status(200).json({
+            tokens: {
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+            },
+        });
+    } catch (err) {
+        console.log("Error logging in with OAuth2 user", err);
+        res.status(400).json({ test: "test" });
+    }
+};
+
+const googleRequestController = (req, res) => {
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Referrer-Policy", "no-referrer-when-downgrade");
+
+    const authorizeUrl = client.generateAuthUrl({
+        access_type: "offline",
+        scope: "https://www.googleapis.com/auth/userinfo.profile openid",
+        prompt: "consent",
+    });
+
+    res.json({ url: authorizeUrl });
+};
+
 export default {
     userRegisterController,
     userLoginController,
     resfreshAccessTokenController,
+    googleLoginController,
+    googleRequestController,
 };
