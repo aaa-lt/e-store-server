@@ -95,14 +95,14 @@ function generateRandomGradientImage(width, height, outputFilePath) {
     fs.writeFileSync(outputFilePath, buffer);
 }
 
-function resizeAndSaveImage(
+async function resizeAndSaveImage(
     inputPath,
     outputPath,
     newWidth,
     newHeight,
     callback
 ) {
-    loadImage(inputPath)
+    await loadImage(inputPath)
         .then((image) => {
             const canvas = createCanvas(newWidth, newHeight);
             const context = canvas.getContext("2d");
@@ -142,7 +142,7 @@ function generateImages(numImages, width, height, dirPath) {
     return fileNames;
 }
 
-function compressImagesToSizes(
+async function compressImagesToSizes(
     fileNames,
     srcDir,
     middleDir,
@@ -153,25 +153,25 @@ function compressImagesToSizes(
     cleanUpImagesDirectory(lowDir);
     cleanUpImagesDirectory(potatoDir);
 
-    fileNames.forEach((fileName, index) => {
+    for (const [index, fileName] of fileNames.entries()) {
         const srcPath = path.join(srcDir, fileName);
         const middlePath = path.join(middleDir, fileName);
         const lowPath = path.join(lowDir, fileName);
         const potatoPath = path.join(potatoDir, fileName);
 
-        resizeAndSaveImage(srcPath, middlePath, 500, 500, () => {
+        await resizeAndSaveImage(srcPath, middlePath, 500, 500, () => {
             console.log(`Resized image ${index + 1} to 500x500`);
         });
 
-        resizeAndSaveImage(srcPath, lowPath, 100, 100, () => {
+        await resizeAndSaveImage(srcPath, lowPath, 100, 100, () => {
             console.log(`Resized image ${index + 1} to 100x100`);
         });
 
-        resizeAndSaveImage(srcPath, potatoPath, 10, 10, () => {
+        await resizeAndSaveImage(srcPath, potatoPath, 10, 10, () => {
             console.log(`Resized image ${index + 1} to 10x10`);
         });
         console.log(`Compressed image ${index + 1}`);
-    });
+    }
 
     console.log(`\nSuccessfully resized images to middle and low sizes.`);
 }
@@ -224,8 +224,8 @@ async function seedDatabase() {
             const lowImagesDir = "images/low";
             const potatoImagesDir = "images/potato";
 
-            const fileNames = generateImages(100, 1000, 1000, fullImagesDir);
-            compressImagesToSizes(
+            const fileNames = generateImages(50, 1000, 1000, fullImagesDir);
+            await compressImagesToSizes(
                 fileNames,
                 fullImagesDir,
                 middleImagesDir,
@@ -243,7 +243,7 @@ async function seedDatabase() {
             Category.findAll({ logging: false }),
             Supplier.findAll({ logging: false }),
         ]);
-        const products = Array.from({ length: 100 }).map((_, index) => ({
+        const products = Array.from({ length: 50 }).map((_, index) => ({
             name: faker.commerce.productName(),
             description: faker.commerce.productDescription(),
             quantity: faker.number.int({ min: 1, max: 1000 }),
