@@ -197,7 +197,7 @@ async function seedDatabase() {
         console.timeEnd("syncDB");
         console.time("seedCategories");
 
-        const categories = Array.from({ length: 1000 }).map((_, index) => ({
+        const categories = Array.from({ length: 50 }).map((_, index) => ({
             name: `${faker.commerce.department()}${index + 1}`,
             description: faker.lorem.sentence(),
         }));
@@ -207,7 +207,7 @@ async function seedDatabase() {
         console.timeEnd("seedCategories");
         console.time("seedSuppliers");
 
-        const suppliers = Array.from({ length: 1000 }).map((_, index) => ({
+        const suppliers = Array.from({ length: 50 }).map((_, index) => ({
             name: faker.company.name(),
             contact_email: `${faker.internet.email()}${index + 1}`,
             phone_number: faker.phone.number({ style: "international" }),
@@ -224,7 +224,7 @@ async function seedDatabase() {
             const lowImagesDir = "images/low";
             const potatoImagesDir = "images/potato";
 
-            const fileNames = generateImages(500, 1000, 1000, fullImagesDir);
+            const fileNames = generateImages(100, 1000, 1000, fullImagesDir);
             compressImagesToSizes(
                 fileNames,
                 fullImagesDir,
@@ -243,7 +243,7 @@ async function seedDatabase() {
             Category.findAll({ logging: false }),
             Supplier.findAll({ logging: false }),
         ]);
-        const products = Array.from({ length: 500 }).map((_, index) => ({
+        const products = Array.from({ length: 100 }).map((_, index) => ({
             name: faker.commerce.productName(),
             description: faker.commerce.productDescription(),
             quantity: faker.number.int({ min: 1, max: 1000 }),
