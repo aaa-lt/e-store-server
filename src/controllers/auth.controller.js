@@ -86,7 +86,7 @@ const userLoginController = async (req, res) => {
 };
 
 const resfreshAccessTokenController = async (req, res) => {
-    if (!req.cookies["refreshToken"]) {
+    if (!req.body.refreshToken) {
         return res
             .status(401)
             .json({ status: "error", message: "Token is required" });

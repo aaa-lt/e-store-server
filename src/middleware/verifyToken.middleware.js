@@ -10,7 +10,7 @@ const verifyToken = (req, res, next) => {
         next();
     } catch (error) {
         return res
-            .status(400)
+            .status(401)
             .json({ status: "error", error: "Invalid access token" });
     }
 };
