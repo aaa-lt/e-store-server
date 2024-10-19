@@ -48,7 +48,7 @@ export const userRegisterService = async (reqBody) => {
         email: reqBody.email,
         user_type: userType,
     });
-    return user.id;
+    return user;
 };
 
 export const userLoginService = async (reqBody) => {
@@ -57,7 +57,7 @@ export const userLoginService = async (reqBody) => {
         return false;
     }
     if (await passwordCompare(reqBody.password, user.password)) {
-        return user.id;
+        return user;
     }
 };
 

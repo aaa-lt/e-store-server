@@ -33,9 +33,9 @@ const userRegisterController = async (req, res) => {
                 error: "User with this Email is already exists",
             });
         }
-        const id = await userRegisterService(req.body);
-        const accessToken = authUtility.createRefreshToken(id);
-        const refreshToken = authUtility.createAccessToken(id);
+        const user = await userRegisterService(req.body);
+        const accessToken = authUtility.createRefreshToken(user.id);
+        const refreshToken = authUtility.createAccessToken(user.id);
 
         res.status(201)
             .cookie("refreshToken", accessToken, {
@@ -48,6 +48,7 @@ const userRegisterController = async (req, res) => {
                 message: "User registered successfully",
                 accessToken: accessToken,
                 refreshToken: refreshToken,
+                user: user,
             });
     } catch (error) {
         res.status(500).json({
@@ -59,27 +60,23 @@ const userRegisterController = async (req, res) => {
 
 const userLoginController = async (req, res) => {
     try {
-        const id = await userLoginService(req.body);
-        if (!id) {
+        const user = await userLoginService(req.body);
+        if (!user) {
             return res
                 .status(401)
                 .json({ status: "error", error: "Invalid credentials" });
         }
 
-        const accessToken = authUtility.createRefreshToken(id);
-        const refreshToken = authUtility.createAccessToken(id);
+        const accessToken = authUtility.createRefreshToken(user.id);
+        const refreshToken = authUtility.createAccessToken(user.id);
 
-        res.cookie("refreshToken", accessToken, {
-            httpOnly: true,
-            sameSite: "strict",
-        })
-            .header("Authorization", refreshToken)
-            .json({
-                status: "success",
-                message: "Logged in",
-                accessToken: accessToken,
-                refreshToken: refreshToken,
-            });
+        res.json({
+            status: "success",
+            message: "Logged in",
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            user: user,
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ status: "error", error: "Login failed" });
