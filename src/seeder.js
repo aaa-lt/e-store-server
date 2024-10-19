@@ -180,7 +180,7 @@ const syncDatabase = async () => {
     try {
         await sequelize.authenticate({ logging: false });
         console.log("Connection has been established successfully.");
-        await sequelize.sync({ force: true, logging: false });
+        await sequelize.sync({ logging: false });
         console.log("Database synchronized.");
     } catch (error) {
         console.error("Unable to connect to the database:", error);
@@ -190,8 +190,27 @@ const syncDatabase = async () => {
 async function seedDatabase() {
     try {
         console.time("seedDatabase");
+
         const transaction = await sequelize.transaction();
+        try {
+            await OrderProduct.destroy({
+                where: {},
+            });
+            await Product.destroy({
+                where: {},
+            });
+            await Supplier.destroy({
+                where: {},
+            });
+            await Category.destroy({
+                where: {},
+            });
+        } catch (error) {
+            console.log(error);
+        }
+
         console.time("syncDB");
+
         await syncDatabase();
 
         console.timeEnd("syncDB");
@@ -216,8 +235,8 @@ async function seedDatabase() {
         await Supplier.bulkCreate(suppliers, { logging: false });
 
         console.timeEnd("seedSuppliers");
-
         console.time("generateImages");
+
         try {
             const fullImagesDir = "images/full";
             const middleImagesDir = "images/middle";
@@ -235,14 +254,15 @@ async function seedDatabase() {
         } catch (error) {
             console.log(error);
         }
-        console.timeEnd("generateImages");
 
+        console.timeEnd("generateImages");
         console.time("seedProducts");
 
         const [categoryRecords, supplierRecords] = await Promise.all([
             Category.findAll({ logging: false }),
             Supplier.findAll({ logging: false }),
         ]);
+
         const products = Array.from({ length: 50 }).map((_, index) => ({
             name: faker.commerce.productName(),
             description: faker.commerce.productDescription(),
@@ -260,6 +280,7 @@ async function seedDatabase() {
         }
 
         await transaction.commit();
+
         console.timeEnd("seedProducts");
         console.log("Database seeded successfully");
     } catch (error) {

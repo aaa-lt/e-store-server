@@ -1,7 +1,5 @@
-import { getUserById } from "../services/user.service.js";
-
 async function isAdmin(req, res, next) {
-    const user = await getUserById(req.userId);
+    const user = req.user;
     try {
         if (user.is_admin) {
             req.user = user;

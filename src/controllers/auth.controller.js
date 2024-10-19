@@ -8,8 +8,9 @@ import {
     tokenRefreshService,
 } from "../services/user.service.js";
 import { OAuth2Client } from "google-auth-library";
+import axios from "axios";
 
-const redirectURL = "http://127.0.0.1:8000/oauth/callback";
+const redirectURL = process.env.GOOGLE_REDIRECT_URI;
 const client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
@@ -114,11 +115,35 @@ const googleLoginController = async (req, res) => {
     const code = req.query.code;
 
     try {
-        const { tokens } = await client.getToken(code);
+        const { tokens: credentials } = await client.getToken(code);
+
+        const userInfoResponse = await axios.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            {
+                headers: {
+                    Authorization: `Bearer ${credentials.access_token}`,
+                },
+            }
+        );
+
+        const { email, name } = userInfoResponse.data;
+
+        const user = await getUserByEmail(email);
+        if (!user) {
+            const newUser = {
+                username: email,
+                friendlyName: name,
+                email: email,
+                password: null,
+                userType: "google",
+            };
+            await userRegisterService(newUser);
+        }
         return res.status(200).json({
             tokens: {
-                accessToken: tokens.access_token,
-                refreshToken: tokens.refresh_token,
+                accessToken: credentials.access_token,
+                refreshToken: credentials.refresh_token,
+                expiryDate: credentials.expiry_date,
             },
         });
     } catch (err) {
@@ -133,7 +158,7 @@ const googleRequestController = (req, res) => {
 
     const authorizeUrl = client.generateAuthUrl({
         access_type: "offline",
-        scope: "https://www.googleapis.com/auth/userinfo.profile openid",
+        scope: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid",
         prompt: "consent",
     });
 

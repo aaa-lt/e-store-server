@@ -1,7 +1,11 @@
 import { Router } from "express";
 import verifyToken from "../middleware/verifyToken.middleware.js";
 import isAdmin from "../middleware/isAdmin.middleware.js";
-import { getMyUser, getUser } from "../controllers/users.controller.js";
+import {
+    getMyUser,
+    getUser,
+    userUpdateNameController,
+} from "../controllers/users.controller.js";
 
 const router = Router();
 
@@ -47,5 +51,35 @@ router.get("/me", verifyToken, getMyUser);
  */
 
 router.get("/:id", verifyToken, isAdmin, getUser);
+
+/**
+ * @openapi
+ * '/users/profile':
+ *  patch:
+ *     tags:
+ *     - User Controller
+ *     summary: Patches user name
+ *     security:
+ *       - Authorization: []
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - user
+ *            properties:
+ *              name:
+ *                type: string
+ *                default: any
+ *     responses:
+ *      200:
+ *        description: Patched Successfully
+ *      500:
+ *        description: Server Error
+ */
+
+router.patch("/profile", verifyToken, userUpdateNameController);
 
 export default router;

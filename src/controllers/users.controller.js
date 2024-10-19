@@ -1,10 +1,14 @@
-import { getUserById } from "../services/user.service.js";
+import { getUserById, updateUserNameById } from "../services/user.service.js";
 
 export const getMyUser = async (req, res) => {
     try {
-        res.status(200).send(await getUserById(req.userId));
+        if (req.user) {
+            return res.status(200).send(req.user);
+        }
+
+        res.status(404).send("User not found");
     } catch (error) {
-        res.status(404).json({
+        res.status(500).json({
             status: "error",
             error: error.message,
         });
@@ -19,5 +23,23 @@ export const getUser = async (req, res) => {
             status: "error",
             error: error.message,
         });
+    }
+};
+
+export const userUpdateNameController = async (req, res) => {
+    try {
+        if (req.body.name) {
+            const resp = await updateUserNameById(req.user, req.body.name);
+
+            return res.status(200).json({
+                status: "success",
+                message: "Name patched",
+                user: resp,
+            });
+        }
+        res.status(400).json({ status: "error", error: "No name provided" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ status: "error", error: "Patch failed" });
     }
 };

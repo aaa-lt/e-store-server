@@ -11,7 +11,7 @@ const User = sequelize.define(
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         email: {
             type: DataTypes.STRING,
@@ -21,6 +21,15 @@ const User = sequelize.define(
         is_admin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
+        },
+        user_type: {
+            type: DataTypes.ENUM("regular", "google"),
+            allowNull: false,
+            defaultValue: "regular",
+        },
+        friendly_name: {
+            type: DataTypes.STRING,
+            allowNull: true,
         },
     },
     {

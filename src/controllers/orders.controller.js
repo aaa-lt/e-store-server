@@ -7,7 +7,7 @@ import { getProductById } from "../services/products.service.js";
 
 const getOrdersController = async (req, res) => {
     try {
-        res.status(200).send(await getAllOrders(req.userId, req.query));
+        res.status(200).send(await getAllOrders(req.user.id, req.query));
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -44,7 +44,7 @@ const createOrderController = async (req, res) => {
             }
         }
 
-        const order = await createOrderService(req.userId, req.body.products);
+        const order = await createOrderService(req.user.id, req.body.products);
         if (!order) {
             return res.status(400).json({
                 status: "error",

@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20.18.0
 RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libpango1.0-dev \

@@ -31,11 +31,22 @@ export const getUserByEmail = async (email) => {
     });
 };
 
+export const updateUserNameById = async (user, friendlyName) => {
+    return await user.update({ friendly_name: friendlyName });
+};
+
 export const userRegisterService = async (reqBody) => {
+    const friendlyName = reqBody.friendlyName
+        ? reqBody.friendlyName
+        : reqBody.username;
+    const userType = reqBody.userType ? reqBody.userType : "regular";
+
     const user = await User.create({
         username: reqBody.username,
-        password: await passwordHash(reqBody.password),
+        friendly_name: friendlyName,
+        password: (await passwordHash(reqBody.password)) ?? null,
         email: reqBody.email,
+        user_type: userType,
     });
     return user.id;
 };
