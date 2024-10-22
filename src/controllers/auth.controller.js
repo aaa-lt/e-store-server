@@ -126,6 +126,12 @@ const googleLoginController = async (req, res) => {
         const { email, name } = userInfoResponse.data;
 
         const user = await getUserByEmail(email);
+        if (user.user_type === "regular") {
+            return res.status(409).json({
+                status: "error",
+                error: "User with this email is already exists",
+            });
+        }
         if (!user) {
             const newUser = {
                 username: email,
@@ -144,8 +150,7 @@ const googleLoginController = async (req, res) => {
             },
         });
     } catch (err) {
-        console.log("Error logging in with OAuth2 user", err);
-        res.status(400).json({ test: "test" });
+        res.status(500).json({ error: err });
     }
 };
 

@@ -6,6 +6,8 @@ import {
     getUser,
     userUpdateNameController,
 } from "../controllers/users.controller.js";
+import upload from "../middleware/upload.middleware.js";
+import { uploadProfileImage } from "../controllers/image.controller.js";
 
 const router = Router();
 
@@ -81,5 +83,12 @@ router.get("/:id", verifyToken, isAdmin, getUser);
  */
 
 router.patch("/profile", verifyToken, userUpdateNameController);
+
+router.post(
+    "/profile/upload-image",
+    verifyToken,
+    upload.single("profileImage"),
+    uploadProfileImage
+);
 
 export default router;

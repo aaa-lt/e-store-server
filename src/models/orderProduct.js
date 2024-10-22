@@ -15,7 +15,7 @@ const OrderProduct = sequelize.define(
     { timestamps: false }
 );
 
-Order.belongsToMany(Product, { through: OrderProduct, onDelete: "CASCADE" });
-Product.belongsToMany(Order, { through: OrderProduct, onDelete: "CASCADE" });
+Order.belongsToMany(Product, { through: OrderProduct });
+Product.belongsToMany(Order, { through: OrderProduct });
 
 export default OrderProduct;

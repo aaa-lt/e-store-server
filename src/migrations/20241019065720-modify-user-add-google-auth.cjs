@@ -21,6 +21,12 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
+        await queryInterface.sequelize.query(`
+        UPDATE \`Users\` 
+        SET \`password\` = '' 
+        WHERE \`password\` IS NULL;
+    `);
+
         await queryInterface.changeColumn("Users", "password", {
             type: Sequelize.STRING,
             allowNull: false,

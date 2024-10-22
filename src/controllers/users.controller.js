@@ -1,13 +1,21 @@
 import { getUserById, updateUserNameById } from "../services/user.service.js";
+import { addSasToUrl } from "../utils/sas.utility.js";
 
 export const getMyUser = async (req, res) => {
     try {
         if (req.user) {
+            if (req.user.profileImageUrl) {
+                req.user.profileImageUrl = addSasToUrl(
+                    req.user.profileImageUrl
+                );
+            }
+
             return res.status(200).send(req.user);
         }
 
         res.status(404).send("User not found");
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             status: "error",
             error: error.message,
