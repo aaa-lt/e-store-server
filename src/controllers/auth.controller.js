@@ -126,7 +126,7 @@ const googleLoginController = async (req, res) => {
         const { email, name } = userInfoResponse.data;
 
         const user = await getUserByEmail(email);
-        if (user.user_type === "regular") {
+        if (user?.user_type === "regular") {
             return res.status(409).json({
                 status: "error",
                 error: "User with this email is already exists",
@@ -149,8 +149,9 @@ const googleLoginController = async (req, res) => {
                 expiryDate: credentials.expiry_date,
             },
         });
-    } catch (err) {
-        res.status(500).json({ error: err });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error });
     }
 };
 
