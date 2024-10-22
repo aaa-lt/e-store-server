@@ -149,8 +149,9 @@ const googleLoginController = async (req, res) => {
                 expiryDate: credentials.expiry_date,
             },
         });
-    } catch (err) {
-        res.status(500).json({ error: err });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error });
     }
 };
 
