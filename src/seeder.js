@@ -184,7 +184,7 @@ async function seedDatabase() {
         console.timeEnd("syncDB");
 
         console.time("seedCategories");
-        const categories = Array.from({ length: 0 }).map((_, index) => ({
+        const categories = Array.from({ length: 50 }).map((_, index) => ({
             name: `${faker.commerce.department()}${index + 1}`,
             description: faker.lorem.sentence(),
         }));
@@ -193,7 +193,7 @@ async function seedDatabase() {
         console.timeEnd("seedCategories");
 
         console.time("seedSuppliers");
-        const suppliers = Array.from({ length: 0 }).map((_, index) => ({
+        const suppliers = Array.from({ length: 50 }).map((_, index) => ({
             name: faker.company.name(),
             contact_email: `${faker.internet.email()}${index + 1}`,
             phone_number: faker.phone.number({ style: "international" }),
@@ -211,7 +211,7 @@ async function seedDatabase() {
 
         const products = [];
 
-        for (let i = 0; i < 48; i++) {
+        for (let i = 0; i < 50; i++) {
             const fileName = `product_${nanoid()}.png`;
             const imageBuffer = await generateRandomImageBuffer(1000, 1000);
             const imagePaths = await compressAndUploadImage(
