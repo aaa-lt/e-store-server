@@ -45,7 +45,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/images", express.static("/app/src/images"));
 app.use("/", routes);
 
 syncDatabase().then(() => {

@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.0.0",
-    "canvas": "^2.11.2",
     "nodemon": "^3.1.4",
     "sequelize-cli": "^6.6.2"
   }

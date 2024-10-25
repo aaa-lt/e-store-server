@@ -1,14 +1,7 @@
-FROM node:20.18.0
-RUN apt-get update && apt-get install -y \
-    libcairo2-dev \
-    libpango1.0-dev \
-    libjpeg-dev \
-    libgif-dev \
-    librsvg2-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM node:20-alpine
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . ./
 EXPOSE ${PORT:-3000}
-CMD ["npm", "run", "dev"]
+CMD npx sequelize-cli db:migrate && npm run dev
