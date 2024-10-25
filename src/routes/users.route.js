@@ -4,7 +4,7 @@ import isAdmin from "../middleware/isAdmin.middleware.js";
 import {
     getMyUser,
     getUser,
-    userUpdateNameController,
+    userUpdateProfileController,
 } from "../controllers/users.controller.js";
 import upload from "../middleware/upload.middleware.js";
 import { uploadProfileImage } from "../controllers/image.controller.js";
@@ -83,7 +83,7 @@ router.get("/:id", verifyToken, isAdmin, getUser);
  *        description: Server Error
  */
 
-router.patch("/profile", verifyToken, userUpdateNameController);
+router.patch("/profile", verifyToken, userUpdateProfileController);
 
 router.post(
     "/profile/upload-image",

@@ -1,4 +1,7 @@
-import { getUserById, updateUserNameById } from "../services/user.service.js";
+import {
+    getUserById,
+    updateUserProfileById,
+} from "../services/user.service.js";
 import { getSASToken } from "../utils/sas.utility.js";
 
 export const getMyUser = async (req, res) => {
@@ -30,18 +33,37 @@ export const getUser = async (req, res) => {
     }
 };
 
-export const userUpdateNameController = async (req, res) => {
+export const userUpdateProfileController = async (req, res) => {
     try {
-        if (req.body.name) {
-            const resp = await updateUserNameById(req.user, req.body.name);
+        const { name, phone_number, age, delivery_address, newsletter_opt_in } =
+            req.body;
 
-            return res.status(200).json({
-                status: "success",
-                message: "Name patched",
-                user: resp,
+        if (
+            !name &&
+            !phone_number &&
+            !age &&
+            !delivery_address &&
+            typeof newsletter_opt_in === "undefined"
+        ) {
+            return res.status(400).json({
+                status: "error",
+                error: "No fields provided for update",
             });
         }
-        res.status(400).json({ status: "error", error: "No name provided" });
+
+        const updatedUser = await updateUserProfileById(req.user, {
+            name,
+            phone_number,
+            age,
+            delivery_address,
+            newsletter_opt_in,
+        });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Profile updated",
+            user: updatedUser,
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ status: "error", error: "Patch failed" });

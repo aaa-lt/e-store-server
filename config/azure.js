@@ -4,10 +4,16 @@ import "dotenv/config";
 const connectionString = process.env.AZURE_CONNECTION_STRING;
 const containerName = process.env.AZURE_CONTAINER_NAME;
 
-const blobServiceClient =
-    BlobServiceClient.fromConnectionString(connectionString);
+let blobServiceClient;
+let containerClient;
 
-const containerClient = blobServiceClient.getContainerClient(containerName);
-await containerClient.createIfNotExists();
+try {
+    blobServiceClient =
+        BlobServiceClient.fromConnectionString(connectionString);
+    containerClient = blobServiceClient.getContainerClient(containerName);
+    await containerClient.createIfNotExists();
+} catch (error) {
+    console.log(error);
+}
 
 export { containerClient, blobServiceClient };

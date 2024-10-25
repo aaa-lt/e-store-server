@@ -35,6 +35,22 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        phone_number: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        age: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        delivery_address: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        newsletter_opt_in: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
     },
     {
         timestamps: false,
