@@ -1,14 +1,10 @@
 import { getUserById, updateUserNameById } from "../services/user.service.js";
-import { addSasToUrl } from "../utils/sas.utility.js";
+import { getSASToken } from "../utils/sas.utility.js";
 
 export const getMyUser = async (req, res) => {
     try {
         if (req.user) {
-            if (req.user.profileImageUrl) {
-                req.user.profileImageUrl = addSasToUrl(
-                    req.user.profileImageUrl
-                );
-            }
+            req.user.dataValues.sasToken = getSASToken();
 
             return res.status(200).send(req.user);
         }

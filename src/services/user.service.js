@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import { passwordCompare, passwordHash } from "./bcrypt.service.js";
 import authUtility from "../utils/jwt.utility.js";
 import jwt from "jsonwebtoken";
+import { getSASToken } from "../utils/sas.utility.js";
 
 export const getUserById = async (id) => {
     return await User.findByPk(id);
@@ -47,7 +48,9 @@ export const userRegisterService = async (reqBody) => {
         password: (await passwordHash(reqBody.password)) ?? null,
         email: reqBody.email,
         user_type: userType,
+        profileImageUrl: reqBody.profileImageUrl ?? null,
     });
+    user.sasToken = getSASToken();
     return user;
 };
 
@@ -57,6 +60,7 @@ export const userLoginService = async (reqBody) => {
         return false;
     }
     if (await passwordCompare(reqBody.password, user.password)) {
+        user.sasToken = getSASToken();
         return user;
     }
 };

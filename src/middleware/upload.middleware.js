@@ -16,7 +16,7 @@ const upload = multer({
         if (mimetype && extname) {
             return cb(null, true);
         } else {
-            cb(new Error("Only images are allowed (jpeg, jpg, png)"));
+            return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file));
         }
     },
 });

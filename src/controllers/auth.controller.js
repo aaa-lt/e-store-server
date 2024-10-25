@@ -9,6 +9,7 @@ import {
 } from "../services/user.service.js";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
+import axiosRetry from "axios-retry";
 
 const redirectURL = process.env.GOOGLE_REDIRECT_URI;
 const client = new OAuth2Client(
@@ -51,6 +52,7 @@ const userRegisterController = async (req, res) => {
                 user: user,
             });
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             status: "error",
             error: "Registration failed",
@@ -114,6 +116,11 @@ const googleLoginController = async (req, res) => {
     try {
         const { tokens: credentials } = await client.getToken(code);
 
+        axiosRetry(axios, {
+            retries: 3,
+            retryDelay: axiosRetry.exponentialDelay,
+        });
+
         const userInfoResponse = await axios.get(
             "https://www.googleapis.com/oauth2/v3/userinfo",
             {
@@ -139,6 +146,7 @@ const googleLoginController = async (req, res) => {
                 email: email,
                 password: null,
                 userType: "google",
+                profileImageUrl: userInfoResponse.data.picture,
             };
             await userRegisterService(newUser);
         }

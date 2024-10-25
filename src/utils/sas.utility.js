@@ -5,7 +5,7 @@ import {
 } from "@azure/storage-blob";
 import { containerClient } from "../../config/azure.js";
 
-export const generateSASUrl = (blobName) => {
+export const getSASToken = (blobName) => {
     const sharedKeyCredential = new StorageSharedKeyCredential(
         process.env.AZURE_ACCOUNT_NAME,
         process.env.AZURE_ACCOUNT_KEY
@@ -18,18 +18,11 @@ export const generateSASUrl = (blobName) => {
         {
             containerName: containerClient.containerName,
             blobName: blobName,
-            permissions: BlobSASPermissions.parse("r"), // Только чтение
+            permissions: BlobSASPermissions.parse("r"),
             expiresOn: expiryDate,
         },
         sharedKeyCredential
     );
 
-    const blobClient = containerClient.getBlobClient(blobName);
-    return `${blobClient.url}?${sasParams.toString()}`;
-};
-
-export const addSasToUrl = (url) => {
-    const blobUrl = new URL(url);
-    const blobName = blobUrl.pathname.split("/").pop();
-    return generateSASUrl(blobName);
+    return sasParams.toString();
 };

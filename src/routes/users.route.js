@@ -8,6 +8,7 @@ import {
 } from "../controllers/users.controller.js";
 import upload from "../middleware/upload.middleware.js";
 import { uploadProfileImage } from "../controllers/image.controller.js";
+import errorCatcher from "../utils/catcher.utility.js";
 
 const router = Router();
 
@@ -90,5 +91,7 @@ router.post(
     upload.single("profileImage"),
     uploadProfileImage
 );
+
+router.use(errorCatcher);
 
 export default router;
