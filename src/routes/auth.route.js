@@ -134,7 +134,7 @@ router.post("/refresh", authController.resfreshAccessTokenController);
  *        description: Server Error
  */
 
-router.get("/oauth", authController.googleLoginController);
-router.post("/request", authController.googleRequestController);
+router.post("/oauth", authController.socialLoginController);
+router.get("/request", authController.googleRequestController);
 
 export default router;

@@ -1,15 +1,13 @@
 import "dotenv/config";
 import authUtility from "../utils/jwt.utility.js";
+import { getUserByEmail, getUserByUsername } from "../services/user.service.js";
 import {
-    getUserByEmail,
-    getUserByUsername,
     userLoginService,
     userRegisterService,
     tokenRefreshService,
-} from "../services/user.service.js";
+    googleAuthService,
+} from "../services/auth.service.js";
 import { OAuth2Client } from "google-auth-library";
-import axios from "axios";
-import axiosRetry from "axios-retry";
 
 const redirectURL = process.env.GOOGLE_REDIRECT_URI;
 const client = new OAuth2Client(
@@ -110,56 +108,64 @@ const resfreshAccessTokenController = async (req, res) => {
     }
 };
 
-const googleLoginController = async (req, res) => {
-    const code = req.query.code;
+const socialLoginController = async (req, res) => {
+    const code = req.body.code;
+    const provider = req.body.provider;
 
     try {
-        const { tokens: credentials } = await client.getToken(code);
+        if (!code || !provider) {
+            return res
+                .status(400)
+                .json({ status: "error", message: "No data provided" });
+        }
+        const tokens = {};
+        switch (provider) {
+            case "google":
+                const { tokens: credentials } = await client.getToken(code);
+                const userInfoResponse = await googleAuthService(credentials);
+                const { email, name } = userInfoResponse.data;
+                const user = await getUserByEmail(email);
 
-        axiosRetry(axios, {
-            retries: 3,
-            retryDelay: axiosRetry.exponentialDelay,
-        });
+                if (user?.user_type === "regular") {
+                    return res.status(409).json({
+                        status: "error",
+                        error: "User with this email is already exists",
+                    });
+                }
+                if (!user) {
+                    const newUser = {
+                        username: email,
+                        friendlyName: name,
+                        email: email,
+                        password: null,
+                        userType: "google",
+                        profileImageUrl: userInfoResponse.data.picture,
+                    };
+                    await userRegisterService(newUser);
+                }
+                tokens.access_token = credentials.access_token;
+                tokens.refresh_token = credentials.refresh_token;
+                tokens.expiry_date = credentials.expiry_date;
+                break;
 
-        const userInfoResponse = await axios.get(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            {
-                headers: {
-                    Authorization: `Bearer ${credentials.access_token}`,
+            default:
+                return res
+                    .status(400)
+                    .json({ status: "error", message: "Invalid provider" });
+        }
+        if (tokens) {
+            return res.status(200).json({
+                tokens: {
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    expiryDate: tokens.expiry_date,
                 },
-            }
-        );
-
-        const { email, name } = userInfoResponse.data;
-
-        const user = await getUserByEmail(email);
-        if (user?.user_type === "regular") {
-            return res.status(409).json({
-                status: "error",
-                error: "User with this email is already exists",
             });
         }
-        if (!user) {
-            const newUser = {
-                username: email,
-                friendlyName: name,
-                email: email,
-                password: null,
-                userType: "google",
-                profileImageUrl: userInfoResponse.data.picture,
-            };
-            await userRegisterService(newUser);
-        }
-        return res.status(200).json({
-            tokens: {
-                accessToken: credentials.access_token,
-                refreshToken: credentials.refresh_token,
-                expiryDate: credentials.expiry_date,
-            },
-        });
+        return res.status(500).json({ status: "error", error: "Login failed" });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: error });
+        return res.status(500).json({ status: "error", error: "Login failed" });
     }
 };
 
@@ -171,6 +177,7 @@ const googleRequestController = (req, res) => {
         access_type: "offline",
         scope: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid",
         prompt: "consent",
+        state: JSON.stringify({ provider: "google" }),
     });
 
     res.json({ url: authorizeUrl });
@@ -180,6 +187,6 @@ export default {
     userRegisterController,
     userLoginController,
     resfreshAccessTokenController,
-    googleLoginController,
+    socialLoginController,
     googleRequestController,
 };
