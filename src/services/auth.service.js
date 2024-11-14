@@ -73,9 +73,40 @@ const googleAuthService = async (credentials) => {
     }
 };
 
+const githubAuthService = async (code) => {
+    try {
+        axiosRetry(axios, {
+            retries: 1,
+            retryDelay: axiosRetry.exponentialDelay,
+        });
+
+        const userInfoResponse = await axios.get(
+            "https://github.com/login/oauth/access_token",
+            {
+                params: {
+                    client_id: process.env.GITHUB_CLIENT_ID,
+                    client_secret: process.env.GITHUB_CLIENT_SECRET,
+                    code: code,
+                    redirect_uri: `http://127.0.0.1:8000/oauth/callback`,
+                },
+                headers: {
+                    Accept: "application/json",
+                    "Accept-Encoding": "application/json",
+                },
+            }
+        );
+
+        return userInfoResponse;
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+};
+
 export {
     userRegisterService,
     userLoginService,
     tokenRefreshService,
     googleAuthService,
+    githubAuthService,
 };

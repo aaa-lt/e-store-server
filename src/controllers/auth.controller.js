@@ -6,6 +6,7 @@ import {
     userRegisterService,
     tokenRefreshService,
     googleAuthService,
+    githubAuthService,
 } from "../services/auth.service.js";
 import { OAuth2Client } from "google-auth-library";
 
@@ -147,6 +148,13 @@ const socialLoginController = async (req, res) => {
                 tokens.refresh_token = credentials.refresh_token;
                 tokens.expiry_date = credentials.expiry_date;
                 break;
+            case "github":
+                console.log("AAA", code);
+                const response = await githubAuthService(code);
+                console.log(response);
+                return res
+                    .status(400)
+                    .json({ status: "error", message: "Invalid provider" });
 
             default:
                 return res
