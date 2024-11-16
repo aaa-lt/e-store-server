@@ -135,6 +135,6 @@ router.post("/refresh", authController.resfreshAccessTokenController);
  */
 
 router.post("/oauth", authController.socialLoginController);
-router.get("/request", authController.googleRequestController);
+router.get("/request", authController.socialRequestController);
 
 export default router;
