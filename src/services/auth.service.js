@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { getSASToken } from "../utils/sas.utility.js";
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import { getUserPasswordByUsername } from "./user.service.js";
+import { getUserPasswordByUsername, getUserByEmail } from "./user.service.js";
 
 const userRegisterService = async (reqBody) => {
   const friendlyName = reqBody.friendlyName
@@ -50,7 +50,32 @@ const tokenRefreshService = (reqBody) => {
   }
 };
 
-const googleAuthService = async (credentials) => {
+const socialUserLoginService = async (provider, userInfo) => {
+  let user = await getUserByEmail(userInfo.email);
+
+  if (!user) {
+    const newUser = {
+      username: userInfo.email,
+      friendlyName: userInfo.name,
+      email: userInfo.email,
+      password: null,
+      userType: provider,
+      profileImageUrl: userInfo.picture,
+    };
+    user = await userRegisterService(newUser);
+  }
+
+  if (user.user_type != provider) {
+    return;
+  }
+
+  return {
+    access_token: authUtility.createRefreshToken(user.id),
+    refresh_token: authUtility.createAccessToken(user.id),
+  };
+};
+
+const getGoogleUserService = async (credentials) => {
   try {
     axiosRetry(axios, {
       retries: 3,
@@ -66,7 +91,7 @@ const googleAuthService = async (credentials) => {
       }
     );
 
-    return userInfoResponse;
+    return userInfoResponse.data;
   } catch (error) {
     console.log(error);
     return;
@@ -134,6 +159,7 @@ export {
   userRegisterService,
   userLoginService,
   tokenRefreshService,
-  googleAuthService,
+  getGoogleUserService,
   githubAuthService,
+  socialUserLoginService,
 };
