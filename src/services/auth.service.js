@@ -112,7 +112,7 @@ const githubAuthService = async (code) => {
                     client_id: process.env.GITHUB_CLIENT_ID,
                     client_secret: process.env.GITHUB_CLIENT_SECRET,
                     code: code,
-                    redirect_uri: `http://127.0.0.1:8000/oauth/callback`,
+                    redirect_uri: process.env.REDIRECT_URI,
                 },
                 headers: {
                     Accept: "application/json",
