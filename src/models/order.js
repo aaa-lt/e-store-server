@@ -5,6 +5,11 @@ import User from "./user.js";
 const Order = sequelize.define(
     "Order",
     {
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+        },
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,

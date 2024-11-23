@@ -2,7 +2,7 @@ import { z } from "zod";
 import Order from "../models/order.js";
 
 export const orderProductCreationSchema = z.object({
-    ProductId: z.number().int().positive(),
+    ProductId: z.string().uuid(),
     quantity: z.number().int().nonnegative(),
 });
 
