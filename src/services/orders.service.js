@@ -1,11 +1,53 @@
+import { Op } from "sequelize";
 import OrderProduct from "../models/orderProduct.js";
 import Order from "../models/order.js";
 import Product from "../models/product.js";
 import sequelize from "../../config/db.js";
 import { metaCalc } from "../utils/pagination.utility.js";
 
+const handlePeriodFilter = (period) => {
+    const now = new Date();
+    const match = period.match(/^(\d+)([dwmy])$/);
+
+    if (!match) {
+        return;
+    }
+
+    const [, value, unit] = match;
+    const amount = parseInt(value, 10);
+
+    let startDate;
+
+    switch (unit) {
+        case "d":
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - amount);
+            break;
+        case "w":
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - amount * 7);
+            break;
+        case "m":
+            startDate = new Date(now);
+            startDate.setMonth(now.getMonth() - amount);
+            break;
+        case "y":
+            startDate = new Date(now);
+            startDate.setFullYear(now.getFullYear() - amount);
+            break;
+    }
+
+    return startDate;
+};
+
 export const getAllOrders = async (userId, reqQuery) => {
-    const filterConditions = { user_id: userId };
+    const filterConditions = {
+        user_id: userId,
+        ...(reqQuery.status && { status: reqQuery.status }),
+        ...(reqQuery.period && {
+            order_date: { [Op.gte]: handlePeriodFilter(reqQuery.period) },
+        }),
+    };
 
     const includeArray = [
         {

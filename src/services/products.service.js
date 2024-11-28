@@ -1,7 +1,5 @@
 import { Op } from "sequelize";
 import Product from "../models/product.js";
-import Category from "../models/category.js";
-import Supplier from "../models/supplier.js";
 import { metaCalc } from "../utils/pagination.utility.js";
 
 export const getAllProducts = async (reqQuery) => {
@@ -15,55 +13,30 @@ export const getAllProducts = async (reqQuery) => {
         ];
     }
 
-    const date = new Date(reqQuery.creationDate);
-    date.setHours(0, 0, 0, 0);
+    const fromDate = reqQuery.fromDate
+        ? new Date(reqQuery.fromDate)
+        : undefined;
+    const toDate = reqQuery.toDate
+        ? new Date(reqQuery.toDate).setHours(23, 59, 59, 999)
+        : undefined;
 
     const filterConditions = {
         ...(reqQuery.name && { name: { [Op.like]: `%${reqQuery.name}%` } }),
-        ...(reqQuery.creationDate && {
+        ...(reqQuery.minPrice || reqQuery.maxPrice
+            ? {
+                  price: {
+                      ...(reqQuery.minPrice && { [Op.gte]: reqQuery.minPrice }),
+                      ...(reqQuery.maxPrice && { [Op.lte]: reqQuery.maxPrice }),
+                  },
+              }
+            : {}),
+        ...((fromDate || toDate) && {
             creation_date: {
-                [Op.gte]: date,
-                [Op.lt]: new Date(reqQuery.creationDate).setDate(
-                    date.getDate() + 1
-                ),
+                ...(fromDate && { [Op.gte]: fromDate }),
+                ...(toDate && { [Op.lte]: toDate }),
             },
         }),
-        ...(reqQuery.minPrice &&
-            reqQuery.maxPrice && {
-                price: {
-                    [Op.between]: [reqQuery.minPrice, reqQuery.maxPrice],
-                },
-            }),
-        ...(reqQuery.minPrice &&
-            !reqQuery.maxPrice && {
-                price: { [Op.gte]: [reqQuery.minPrice] },
-            }),
-        ...(reqQuery.maxPrice &&
-            !reqQuery.minPrice && {
-                price: { [Op.lte]: [reqQuery.maxPrice] },
-            }),
     };
-
-    const includeArray = [
-        {
-            model: Category,
-            ...(reqQuery.categoryName && {
-                where: {
-                    name: { [Op.like]: `%${reqQuery.categoryName}%` },
-                },
-            }),
-            attributes: ["id", "name"],
-        },
-        {
-            model: Supplier,
-            ...(reqQuery.supplierName && {
-                where: {
-                    name: { [Op.like]: `%${reqQuery.supplierName}%` },
-                },
-            }),
-            attributes: ["id", "name"],
-        },
-    ];
 
     const count = await Product.count({
         where: filterConditions,
@@ -81,11 +54,11 @@ export const getAllProducts = async (reqQuery) => {
             }),
         distinct: true,
     });
+
     const meta = metaCalc(count, reqQuery.page, reqQuery.limit);
 
     const products = await Product.findAll({
         where: filterConditions,
-        include: includeArray,
         attributes: [
             "id",
             "name",
