@@ -1,7 +1,6 @@
 import { containerClient } from "../../config/azure.js";
 import { nanoid } from "nanoid";
 import { extname } from "path";
-import { getSASToken } from "../utils/sas.utility.js";
 import sharp from "sharp";
 
 export const uploadProfileImage = async (req, res) => {
@@ -33,7 +32,6 @@ export const uploadProfileImage = async (req, res) => {
         const profileImageUrl = blockBlobClient.url;
 
         const updatedUser = await req.user.update({ profileImageUrl });
-        updatedUser.dataValues.sasToken = getSASToken();
 
         res.status(200).json({
             message: "Profile image uploaded successfully",

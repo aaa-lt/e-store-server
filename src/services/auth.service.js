@@ -2,7 +2,6 @@ import User from "../models/user.js";
 import { passwordCompare, passwordHash } from "./bcrypt.service.js";
 import authUtility from "../utils/jwt.utility.js";
 import jwt from "jsonwebtoken";
-import { getSASToken } from "../utils/sas.utility.js";
 import axios from "axios";
 import axiosRetry from "axios-retry";
 import { getUserPasswordByUsername, getUserByEmail } from "./user.service.js";
@@ -21,7 +20,6 @@ const userRegisterService = async (reqBody) => {
         user_type: userType,
         profileImageUrl: reqBody.profileImageUrl ?? null,
     });
-    user.sasToken = getSASToken();
     return user;
 };
 
@@ -31,7 +29,6 @@ const userLoginService = async (reqBody) => {
         return false;
     }
     if (await passwordCompare(reqBody.password, user.password)) {
-        user.sasToken = getSASToken();
         return user;
     }
 };
@@ -105,27 +102,27 @@ const githubAuthService = async (code) => {
             retryDelay: axiosRetry.exponentialDelay,
         });
 
-        const userInfoResponse = await axios.get(
-            "https://github.com/login/oauth/access_token",
-            {
-                params: {
-                    client_id: process.env.GITHUB_CLIENT_ID,
-                    client_secret: process.env.GITHUB_CLIENT_SECRET,
-                    code: code,
-                    redirect_uri: process.env.REDIRECT_URI,
-                },
-                headers: {
-                    Accept: "application/json",
-                    "Accept-Encoding": "application/json",
-                },
-            }
-        );
+        // to separate func
+        const {
+            data: { access_token: accessToken },
+        } = await axios.get("https://github.com/login/oauth/access_token", {
+            params: {
+                client_id: process.env.GITHUB_CLIENT_ID,
+                client_secret: process.env.GITHUB_CLIENT_SECRET,
+                code: code,
+                redirect_uri: process.env.REDIRECT_URI,
+            },
+            headers: {
+                Accept: "application/json",
+                "Accept-Encoding": "application/json",
+            },
+        });
 
-        const accessToken = userInfoResponse.data.access_token;
         if (!accessToken) {
             throw new Error("Failed to obtain access token");
         }
 
+        // promise all two funcs (private helpers крутое слово)
         const userProfileResponse = await axios.get(
             "https://api.github.com/user",
             {
@@ -147,7 +144,7 @@ const githubAuthService = async (code) => {
         );
 
         return {
-            access_token: userInfoResponse.data.access_token,
+            access_token: accessToken,
             profilePicture: userProfileResponse.data.avatar_url,
             name: userProfileResponse.data.name,
             email: emailResponse.data[0].email,

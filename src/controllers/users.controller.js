@@ -2,13 +2,10 @@ import {
     getUserById,
     updateUserProfileById,
 } from "../services/user.service.js";
-import { getSASToken } from "../utils/sas.utility.js";
 
 export const getMyUser = async (req, res) => {
     try {
         if (req.user) {
-            req.user.dataValues.sasToken = getSASToken();
-
             return res.status(200).send(req.user);
         }
 
