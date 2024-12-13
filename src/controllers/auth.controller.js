@@ -5,11 +5,10 @@ import {
     userLoginService,
     userRegisterService,
     tokenRefreshService,
-    getGoogleUserService,
-    githubAuthService,
     socialUserLoginService,
 } from "../services/auth.service.js";
 import { OAuth2Client } from "google-auth-library";
+import SocialStrategyFactory from "../factories/socialStrategyFactory.js";
 
 const redirectURL = process.env.REDIRECT_URI;
 const client = new OAuth2Client(
@@ -111,8 +110,7 @@ const resfreshAccessTokenController = async (req, res) => {
 };
 
 const socialLoginController = async (req, res) => {
-    const code = req.body.code;
-    const provider = req.body.provider;
+    const { code, provider } = req.body;
 
     try {
         if (!code || !provider) {
@@ -120,40 +118,15 @@ const socialLoginController = async (req, res) => {
                 .status(400)
                 .json({ status: "error", message: "No data provided" });
         }
-        let tokens = {};
-        switch (provider) {
-            case "google":
-                const { tokens: credentials } = await client.getToken(code);
-                const response = await getGoogleUserService(credentials);
 
-                tokens = await socialUserLoginService(provider, {
-                    email: response.email,
-                    name: response.name,
-                    picture: response.profilePicture,
-                });
+        const strategy = SocialStrategyFactory.getStrategy(req.body.provider);
+        const userInfo = await strategy.getUserInfo(code);
+        const tokens = await socialUserLoginService(provider, userInfo);
 
-                break;
-            case "github": {
-                const response = await githubAuthService(code);
-
-                tokens = await socialUserLoginService(provider, {
-                    email: response.email,
-                    name: response.name,
-                    picture: response.profilePicture,
-                });
-
-                break;
-            }
-
-            default:
-                return res
-                    .status(400)
-                    .json({ status: "error", message: "Invalid provider" });
-        }
         if (!tokens) {
             return res.status(409).json({
                 status: "error",
-                error: "User with this email is already exists",
+                error: "User with this email already exists",
             });
         }
 
@@ -170,32 +143,13 @@ const socialLoginController = async (req, res) => {
 };
 
 const socialRequestController = (req, res) => {
-    switch (req.query.provider) {
-        case "google": {
-            res.header("Access-Control-Allow-Credentials", "true");
-            res.header("Referrer-Policy", "no-referrer-when-downgrade");
+    try {
+        const strategy = SocialStrategyFactory.getStrategy(req.query.provider);
+        const url = strategy.getAuthorizationUrl();
 
-            const authorizeUrl = client.generateAuthUrl({
-                access_type: "offline",
-                scope: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid",
-                prompt: "consent",
-                state: JSON.stringify({ provider: req.query.provider }),
-            });
-
-            return res.status(200).json({ url: authorizeUrl });
-        }
-        case "github": {
-            const client_id = process.env.GITHUB_CLIENT_ID;
-            const redirect_uri = process.env.REDIRECT_URI;
-            const state = JSON.stringify({ provider: req.query.provider });
-            const authorizeUrl = `https://github.com/login/oauth/authorize?client_id=${client_id}&response_type=code&scope=user:email%20read:user&redirect_uri=${redirect_uri}&state=${state}`;
-
-            return res.status(200).json({ url: authorizeUrl });
-        }
-
-        default:
-            return res.status(400).send("Invalid provider");
-            break;
+        return res.status(200).json({ url });
+    } catch (error) {
+        return res.status(400).send("Invalid provider");
     }
 };
 

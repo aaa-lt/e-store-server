@@ -72,94 +72,9 @@ const socialUserLoginService = async (provider, userInfo) => {
     };
 };
 
-const getGoogleUserService = async (credentials) => {
-    try {
-        axiosRetry(axios, {
-            retries: 3,
-            retryDelay: axiosRetry.exponentialDelay,
-        });
-
-        const userInfoResponse = await axios.get(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            {
-                headers: {
-                    Authorization: `Bearer ${credentials.access_token}`,
-                },
-            }
-        );
-
-        return userInfoResponse.data;
-    } catch (error) {
-        console.log(error);
-        return;
-    }
-};
-
-const githubAuthService = async (code) => {
-    try {
-        axiosRetry(axios, {
-            retries: 3,
-            retryDelay: axiosRetry.exponentialDelay,
-        });
-
-        // to separate func
-        const {
-            data: { access_token: accessToken },
-        } = await axios.get("https://github.com/login/oauth/access_token", {
-            params: {
-                client_id: process.env.GITHUB_CLIENT_ID,
-                client_secret: process.env.GITHUB_CLIENT_SECRET,
-                code: code,
-                redirect_uri: process.env.REDIRECT_URI,
-            },
-            headers: {
-                Accept: "application/json",
-                "Accept-Encoding": "application/json",
-            },
-        });
-
-        if (!accessToken) {
-            throw new Error("Failed to obtain access token");
-        }
-
-        // promise all two funcs (private helpers крутое слово)
-        const userProfileResponse = await axios.get(
-            "https://api.github.com/user",
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    Accept: "application/vnd.github.v3+json",
-                },
-            }
-        );
-
-        const emailResponse = await axios.get(
-            "https://api.github.com/user/emails",
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    Accept: "application/vnd.github.v3+json",
-                },
-            }
-        );
-
-        return {
-            access_token: accessToken,
-            profilePicture: userProfileResponse.data.avatar_url,
-            name: userProfileResponse.data.name,
-            email: emailResponse.data[0].email,
-        };
-    } catch (error) {
-        console.log(error);
-        return;
-    }
-};
-
 export {
     userRegisterService,
     userLoginService,
     tokenRefreshService,
-    getGoogleUserService,
-    githubAuthService,
     socialUserLoginService,
 };
